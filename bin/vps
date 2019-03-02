@@ -6,4 +6,5 @@ require "vps/cli"
 begin
   VPS::CLI.start
 rescue Interrupt
+  puts "Abort."
 end

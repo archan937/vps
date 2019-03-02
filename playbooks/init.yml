@@ -1,0 +1,10 @@
+---
+description:
+  Execute an initial server setup
+confirm:
+  Are you sure you want to initially setup your VPS?
+user:
+  root
+tasks:
+  - task: :playbook
+    playbook: init

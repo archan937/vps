@@ -17,6 +17,9 @@ Gem::Specification.new do |gem|
   gem.licenses      = ["MIT"]
 
   gem.add_dependency "thor"
+  gem.add_dependency "inquirer"
+  gem.add_dependency "net-ssh"
+  gem.add_dependency "activesupport", ">= 4.1.8"
 
   gem.add_development_dependency "pry"
   gem.add_development_dependency "simplecov"
