@@ -16,6 +16,8 @@ Gem::Specification.new do |gem|
   gem.version       = VPS::VERSION
   gem.licenses      = ["MIT"]
 
+  gem.add_dependency "thor"
+
   gem.add_development_dependency "pry"
   gem.add_development_dependency "simplecov"
   gem.add_development_dependency "minitest"

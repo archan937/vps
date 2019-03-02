@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require "rubygems"
+require "vps/cli"
+
+begin
+  VPS::CLI.start
+rescue Interrupt
+end
