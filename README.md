@@ -1,4 +1,4 @@
-# VPS Control
+# VPS
 
 Manage your Virtual Private Server using a user-friendly CLI
 
@@ -6,7 +6,7 @@ Manage your Virtual Private Server using a user-friendly CLI
 
 ## Installation
 
-Run the following command to install `VPS Control`:
+Run the following command to install `VPS`:
 
     $ gem install "vps"
 
@@ -16,7 +16,7 @@ VPS is a command-line-interface, you can print help instructions:
 
     $ vps help
     Commands:
-      vps -v, [--version]  # Show VPS Control version number
+      vps -v, [--version]  # Show VPS version number
       vps help [COMMAND]   # Describe available commands or one specific command
       vps init             # Execute an initial server setup (including sudo user and firewall)
 

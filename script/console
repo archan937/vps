@@ -3,5 +3,5 @@
 require "bundler"
 Bundler.require :default, :development
 
-puts "Loading VPS Control development environment (#{VPS::VERSION})"
+puts "Loading VPS development environment (#{VPS::VERSION})"
 Pry.start

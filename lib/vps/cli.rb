@@ -22,10 +22,10 @@ module VPS
       end
     end
 
-    desc "-v, [--version]", "Show VPS Control version number"
+    desc "-v, [--version]", "Show VPS version number"
     map %w(-v --version) => :version
     def version
-      puts "VPS Control #{VPS::VERSION}"
+      puts "VPS #{VPS::VERSION}"
     end
 
   private
