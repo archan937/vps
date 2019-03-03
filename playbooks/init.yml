@@ -6,5 +6,5 @@ confirm:
 user:
   root
 tasks:
-  - task: :playbook
+  - task: playbook
     playbook: init

@@ -49,7 +49,7 @@ module VPS
       end
 
       def run(state)
-        Tasks.new(tasks).run(state)
+        Tasks.new(tasks).run!(state)
       end
 
       def description
@@ -67,7 +67,6 @@ module VPS
           tasks.push({
             "task" => :confirm,
             "question" => playbook["confirm"],
-            "y" => :continue,
             "n" => :abort
           })
         end

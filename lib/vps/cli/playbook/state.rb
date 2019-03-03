@@ -8,11 +8,24 @@ module VPS
         def initialize(host, playbook, options)
           @host = host
           @user = playbook["user"]
-          @state = resolve(playbook, options)
+          @stack = [resolve(playbook, options)]
+        end
+
+        def scope
+          stack.unshift({})
+          yield
+          stack.shift
         end
 
         def [](key)
-          @state[key]
+          stack.each do |hash|
+            return hash[key] if hash.key?(key)
+          end
+          nil
+        end
+
+        def []=(key, value)
+          stack.first[key] = value
         end
 
         def server_version
@@ -30,6 +43,10 @@ module VPS
 
         def ssh
           @ssh ||= Net::SSH.start(@host, @user)
+        end
+
+        def stack
+          @stack
         end
 
         def resolve(playbook, options)
