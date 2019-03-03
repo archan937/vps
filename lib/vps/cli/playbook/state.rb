@@ -28,6 +28,11 @@ module VPS
           stack.first[key] = value
         end
 
+        def execute(command)
+          command = command.gsub(/\{\{(.*?)\}\}/) { self[$1] }
+          ssh.exec!(command)
+        end
+
         def server_version
           @server_version ||= begin
             release = ssh.exec!("cat /etc/lsb-release")

@@ -8,3 +8,9 @@ tasks:
       - task: input
         question: Fill in the username for the new sudo user
         as: username
+      - description: Creating a New User
+        task: execute
+        command: adduser {{username}}
+      - description: Granting Administrative Privileges
+        task: execute
+        command: usermod -aG sudo {{username}}

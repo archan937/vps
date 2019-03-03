@@ -49,6 +49,11 @@ module VPS
           set(state, options, answer)
         end
 
+        def execute(state, options)
+          output = state.execute(options["command"])
+          set(state, options, output)
+        end
+
         def playbook(state, options)
           Playbook.run(options["playbook"], state)
         end
