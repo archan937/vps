@@ -1,16 +1,87 @@
 ---
 source:
-  https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04
+  - https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04
+  - https://github.com/jasonheecs/ubuntu-server-setup/blob/master/setupLibrary.sh
 tasks:
-  - task: :confirm
-    question: Do you want to create a sudo user?
-    y:
+  - description: Updating server with latest packages
+    task: remote_execute
+    command: apt-get update && apt-get upgrade -y
+  - task: multiselect
+    question: Which tasks do you want to execute?
+    options:
+      add_sudo_user: Add new user with sudo access
+      disable_password_authentication: Disable password authentication to the server
+      setup_uncomplicated_firewall: Setup Uncomplicated FireWall
+      setup_timezone: Setup server timezone
+      install_network_time_protocol: Install Network Time Protocol
+      deny_root_login: Deny root login to the server
+  - task: when
+    boolean: add_sudo_user
+    run:
       - task: input
-        question: Fill in the username for the new sudo user
+        question: Enter username for the new sudo user
         as: username
-      - description: Creating a New User
+      - description: Creating new user
+        task: remote_execute
+        command: adduser --disabled-password --gecos '' {{ username }}
+      - description: Granting administrative privileges
+        task: remote_execute
+        command: usermod -aG sudo {{ username }}
+      - task: input
+        question: Enter location of your public SSH key
+        default: ~/.ssh/id_rsa.pub
+        as: public_key
+      - description: Copying public SSH key
         task: execute
-        command: adduser {{username}}
-      - description: Granting Administrative Privileges
-        task: execute
-        command: usermod -aG sudo {{username}}
+        command: cat {{ public_key }}
+        as: public_key
+      - description: Installing public SSH key on server
+        task: remote_execute
+        user: "{{ username }}"
+        command:
+          - mkdir -p ~/.ssh; chmod 700 ~/.ssh; touch ~/.ssh/authorized_keys
+          - echo {{{ public_key }}} | sudo tee -a ~/.ssh/authorized_keys
+          - chmod 600 ~/.ssh/authorized_keys
+      - description: Disabling sudo password for new user
+        task: remote_execute
+        user: "{{ username }}"
+        command:
+          - cp /etc/sudoers /etc/sudoers.bak
+          - "bash -c \"echo '{{ username }} ALL=(ALL) NOPASSWD: ALL' | (EDITOR='tee -a' visudo)\""
+  - task: when
+    boolean: disable_password_authentication
+    run:
+      - description: Disabling password authentication
+        task: remote_execute
+        command:
+          sed -re 's/^(\#?)(PasswordAuthentication)([[:space:]]+)yes/\2\3no/' -i."$(echo 'old')" /etc/ssh/sshd_config
+  - task: when
+    boolean: deny_root_login
+    run:
+      - description: Denying root login to the server
+        task: remote_execute
+        command:
+          sed -re 's/^(\#?)(PermitRootLogin)([[:space:]]+)(.*)/PermitRootLogin no/' -i /etc/ssh/sshd_config
+  - task: when
+    boolean: setup_uncomplicated_firewall
+    run:
+      - description: Setting up Uncomplicated FireWall
+        task: remote_execute
+        command:
+          - ufw allow OpenSSH
+          - yes y | ufw enable
+  - task: when
+    boolean: setup_timezone
+    run:
+      - description: Setting up the server timezone
+        task: remote_execute
+        command:
+          export timezone=`wget -qO - http://geoip.ubuntu.com/lookup | sed -n -e 's/.*<TimeZone>\(.*\)<\/TimeZone>.*/\1/p'` && timedatectl set-timezone $timezone
+  - task: when
+    boolean: install_network_time_protocol
+    run:
+      - description: Installing Network Time Protocol
+        task: remote_execute
+        command:
+          - apt-get update
+          - apt-get --assume-yes install ntp

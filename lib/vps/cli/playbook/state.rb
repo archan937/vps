@@ -8,29 +8,51 @@ module VPS
         def initialize(host, playbook, options)
           @host = host
           @user = playbook["user"]
-          @stack = [resolve(playbook, options)]
+          @stack = [options.with_indifferent_access]
+        end
+
+        def dry_run?
+          !!fetch(:d)
         end
 
         def scope
-          stack.unshift({})
+          stack.unshift(HashWithIndifferentAccess.new)
           yield
           stack.shift
         end
 
-        def [](key)
+        def resolve(string)
+          string.gsub(/\{\{(\{?)\s*(.*?)\s*\}\}\}?/) do
+            value = self[$2]
+            ($1 == "{") ? value.inspect : value
+          end if string
+        end
+
+        def fetch(key, default = nil)
           stack.each do |hash|
             return hash[key] if hash.key?(key)
           end
-          nil
+          default
+        end
+
+        def [](key)
+          fetch(key)
         end
 
         def []=(key, value)
           stack.first[key] = value
         end
 
-        def execute(command)
-          command = command.gsub(/\{\{(.*?)\}\}/) { self[$1] }
-          ssh.exec!(command)
+        def execute(command, user = nil)
+          if user
+            command = "sudo -u #{user} -H bash -c #{command.inspect}"
+          end
+          puts "[REMOTE] #{command}"
+          unless dry_run?
+            ssh.exec!(command).tap do |result|
+              puts result
+            end 
+          end
         end
 
         def server_version
@@ -52,10 +74,6 @@ module VPS
 
         def stack
           @stack
-        end
-
-        def resolve(playbook, options)
-          {}
         end
 
       end

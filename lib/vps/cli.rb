@@ -4,8 +4,9 @@ require "inquirer"
 require "net/ssh"
 
 require "active_support/dependencies/autoload"
-require "active_support/number_helper"
 require "active_support/core_ext/string/inflections"
+require "active_support/core_ext/hash"
+require "active_support/number_helper"
 
 require "vps/cli/playbook"
 require "vps"
@@ -17,6 +18,7 @@ module VPS
 
     Playbook.all.each do |playbook|
       desc playbook.usage, playbook.description
+      method_options playbook.options if playbook.options
       define_method playbook.command do |host|
         playbook.run!(host, options)
       end
@@ -25,7 +27,7 @@ module VPS
     desc "-v, [--version]", "Show VPS version number"
     map %w(-v --version) => :version
     def version
-      puts "VPS #{VPS::VERSION}"
+      puts "vps #{VPS::VERSION}"
     end
 
   private

@@ -29,6 +29,9 @@ module VPS
             else
               name, options = resolve(task)
               if name
+                if description = options[:description]
+                  puts "#{description} ..."
+                end
                 send(name, state, options)
               else
                 raise InvalidTaskError, "Invalid task #{task.inspect}"
@@ -37,41 +40,89 @@ module VPS
           end
         end
 
+        def when(state, options)
+          if state[options[:boolean]]
+            run(state, options[:run])
+          end
+        end
+
         def confirm(state, options)
-          answer = Ask.confirm(options["question"]) ? "y" : "n"
+          answer = Ask.confirm(options[:question]) ? "y" : "n"
           tasks = options[answer]
           set(state, options, answer)
           run(state, tasks)
         end
 
+        def multiselect(state, options)
+          names, labels, defaults = [], [], []
+
+          options[:options].inject([names, labels, defaults]) do |_, (name, label)|
+            default = true
+            label = label.gsub(/ \[false\]$/) do
+              default = false
+              ""
+            end
+            names.push(name)
+            labels.push(label)
+            defaults.push(default)
+          end
+
+          selected = Ask.checkbox(options[:question], labels, default: defaults)
+          selected.each_with_index do |value, index|
+            name = names[index]
+            state[name] = value
+          end
+        end
+
         def input(state, options)
-          answer = Ask.input(options["question"])
+          answer = Ask.input(options[:question], default: options[:default])
           set(state, options, answer)
         end
 
         def execute(state, options)
-          output = state.execute(options["command"])
+          output = [options[:command]].flatten.inject(nil) do |_, command|
+            command = state.resolve(command)
+            puts "[LOCAL] #{command}"
+            unless state.dry_run?
+              `#{command}`.tap do |result|
+                puts result
+              end
+            end
+          end
+          set(state, options, output)
+        end
+
+        def remote_execute(state, options)
+          user = state.resolve(options[:user])
+          output = [options[:command]].flatten.inject(nil) do |_, command|
+            command = state.resolve(command)
+            state.execute(command, user)
+          end
           set(state, options, output)
         end
 
         def playbook(state, options)
-          Playbook.run(options["playbook"], state)
+          Playbook.run(options[:playbook], state)
+        end
+
+        def print(state, options)
+          puts state.resolve(options[:message])
         end
 
       private
 
         def resolve(task)
           if task.is_a?(Hash)
-            name = task["task"].to_sym
+            task = task.with_indifferent_access
+            name = task.delete(:task).to_sym
             if Tasks.available.include?(name)
-              options = task.reject{|key, value| key == "task"}
-              [name, options]
+              [name, task]
             end
           end
         end
 
         def set(state, options, answer)
-          if as = options["as"]
+          if as = options[:as]
             state[as] = answer
           end
         end

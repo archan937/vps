@@ -8,7 +8,7 @@ module VPS
       class NotFoundError < CLI::Error; end
       class MissingConfirmationError < CLI::Error; end
 
-      DIRECTORY = File.expand_path("playbooks")
+      DIRECTORY = File.expand_path(File.join(__FILE__, "../../../../playbooks"))
       EXTNAME = ".yml"
 
       attr_reader :command
@@ -57,21 +57,34 @@ module VPS
       end
 
       def usage
-        [@command, "[LOGIN]"].join(" ")
+        [@command, "[HOST]"].join(" ")
+      end
+
+      def options
+        options = playbook["options"] || {}
+        options[%w(-d --dry-run)] = :boolean
+        options
       end
 
       def tasks
-        tasks = []
+        tasks = [playbook["tasks"]].flatten.compact
 
         if requires_confirmation?
-          tasks.push({
+          tasks.unshift({
             "task" => :confirm,
             "question" => playbook["confirm"],
             "n" => :abort
           })
         end
 
-        tasks + [playbook["tasks"]].flatten.compact
+        if @command
+          tasks.push({
+            "task" => :print,
+            "message" => "Done."
+          })
+        end
+
+        tasks
       end
 
     private
