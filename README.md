@@ -18,7 +18,7 @@ VPS is a command-line-interface, you can print help instructions:
     Commands:
       vps -v, [--version]  # Show VPS version number
       vps help [COMMAND]   # Describe available commands or one specific command
-      vps init             # Execute an initial server setup (including sudo user and firewall)
+      vps init [LOGIN]     # Execute an initial server setup
 
 ## Contact me
 
