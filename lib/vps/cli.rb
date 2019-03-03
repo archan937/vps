@@ -8,6 +8,7 @@ require "active_support/core_ext/string/inflections"
 require "active_support/core_ext/hash"
 require "active_support/number_helper"
 
+require "vps/core_ext/string"
 require "vps/cli/playbook"
 require "vps"
 
