@@ -77,13 +77,6 @@ module VPS
           })
         end
 
-        if @command
-          tasks.push({
-            "task" => :print,
-            "message" => "Done."
-          })
-        end
-
         tasks
       end
 

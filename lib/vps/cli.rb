@@ -21,7 +21,9 @@ module VPS
       desc playbook.usage, playbook.description
       method_options playbook.options if playbook.options
       define_method playbook.command do |host|
+        start = Time.now
         playbook.run!(host, options)
+        puts "\nDone. ".cyan + "#{(Time.now - start).round(3)}s".gray
       end
     end
 

@@ -47,11 +47,15 @@ module VPS
           if user
             command = "sudo -u #{user} -H bash -c #{command.inspect}"
           end
-          puts "[REMOTE] #{command}"
+          puts "🏄‍♀️  ~> ".gray + command.yellow
           unless dry_run?
+            start = Time.now
             ssh.exec!(command).tap do |result|
-              puts result
-            end 
+              result = result.gsub(/^/, "   ").strip
+              result += " " unless result.blank?
+              result += "#{(Time.now - start).round(3)}s".gray
+              puts "   #{result}"
+            end
           end
         end
 

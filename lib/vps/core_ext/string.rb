@@ -21,7 +21,7 @@ private
 
   def colorize(color)
     color = COLORS[color]
-    "\e[1m\e[#{color}m#{self}\e[0m"
+    "\033[0;#{color}m#{self}\033[0m"
   end
 
 end
