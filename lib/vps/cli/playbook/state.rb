@@ -52,9 +52,8 @@ module VPS
             start = Time.now
             ssh.exec!(command).tap do |result|
               result = result.gsub(/^/, "   ").strip
-              result += " " unless result.blank?
-              result += "#{(Time.now - start).round(3)}s".gray
-              puts "   #{result}"
+              puts "   #{result}" unless result.blank?
+              puts "   #{(Time.now - start).round(3)}s".gray
             end
           end
         end
