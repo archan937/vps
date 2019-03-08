@@ -73,6 +73,7 @@ module VPS
           tasks.unshift({
             "task" => :confirm,
             "question" => playbook["confirm"],
+            "indent" => false,
             "n" => :abort
           })
         end
