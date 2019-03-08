@@ -50,11 +50,23 @@ module VPS
           puts "🏄‍♀️  ~> ".gray + command.yellow
           unless dry_run?
             start = Time.now
-            ssh.exec!(command).tap do |result|
-              result = result.gsub(/^/, "   ").strip
-              puts "   #{result}" unless result.blank?
-              puts "   #{(Time.now - start).round(3)}s".gray
+            result = []
+
+            channel = ssh.open_channel do |ch|
+              ch.exec(command) do |ch|
+                ch.on_data do |_, data|
+                  unless data.blank?
+                    data = data.split("\n").reject(&:blank?)
+                    puts "   " + data.join("\n   ")
+                    result.concat data
+                  end
+                end
+              end
             end
+            channel.wait
+
+            puts "   #{(Time.now - start).round(3)}s".gray
+            result.join("\n")
           end
         end
 

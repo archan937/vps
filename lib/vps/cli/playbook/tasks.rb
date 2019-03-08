@@ -47,7 +47,7 @@ module VPS
         end
 
         def confirm(state, options)
-          answer = Ask.confirm(options[:question]) ? "y" : "n"
+          answer = Ask.confirm("   " + options[:question]) ? "y" : "n"
           tasks = options[answer]
           set(state, options, answer)
           run(state, tasks)
@@ -67,7 +67,7 @@ module VPS
             defaults.push(default)
           end
 
-          selected = Ask.checkbox(options[:question], labels, default: defaults)
+          selected = Ask.checkbox("   " + options[:question], labels, default: defaults)
           selected.each_with_index do |value, index|
             name = names[index]
             state[name] = value
@@ -75,7 +75,7 @@ module VPS
         end
 
         def input(state, options)
-          answer = Ask.input(options[:question], default: options[:default])
+          answer = Ask.input("   " + options[:question], default: options[:default])
           set(state, options, answer)
         end
 
