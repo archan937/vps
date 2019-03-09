@@ -5,8 +5,8 @@ module VPS
   class CLI < Thor
     class Playbook
 
-      class NotFoundError < CLI::Error; end
-      class MissingConfirmationError < CLI::Error; end
+      class NotFoundError < VPS::CLI::Error; end
+      class MissingConfirmationError < VPS::CLI::Error; end
 
       DIRECTORY = File.expand_path(File.join(__FILE__, "../../../../playbooks"))
       EXTNAME = ".yml"

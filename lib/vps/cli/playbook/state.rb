@@ -3,6 +3,8 @@ module VPS
     class Playbook
       class State
 
+        class AuthenticationFailedError < VPS::CLI::Error; end
+
         SERVER_VERSION = "SERVER_VERSION"
 
         def initialize(host, playbook, options)
@@ -85,6 +87,8 @@ module VPS
 
         def ssh
           @ssh ||= Net::SSH.start(@host, @user)
+        rescue Net::SSH::AuthenticationFailed => e
+          raise AuthenticationFailedError, e.message
         end
 
         def stack

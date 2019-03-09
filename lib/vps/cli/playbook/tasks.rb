@@ -3,7 +3,7 @@ module VPS
     class Playbook
       class Tasks
 
-        class InvalidTaskError < CLI::Error; end
+        class InvalidTaskError < VPS::CLI::Error; end
 
         def self.available
           public_instance_methods(false) - [:run]
