@@ -27,6 +27,9 @@ tasks:
   - description: Installing Docker
     task: remote_execute
     command: sudo apt install -y docker-ce
+  - description: Adding current user to the docker group
+    task: remote_execute
+    command: sudo usermod -aG docker ${USER}
   - description: Checking Docker state
     task: remote_execute
     command: sudo systemctl status docker
