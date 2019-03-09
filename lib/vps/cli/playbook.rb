@@ -41,28 +41,20 @@ module VPS
         @command = command
       end
 
-      def run!(host, options, args = [])
-        state = State.new(host, playbook, options)
-        arguments.each_with_index do |argument, index|
-          state[argument] = args[index]
-        end
-        run(state)
-      end
-
-      def run(state)
-        Tasks.new(tasks).run!(state)
-      end
-
       def description
         playbook["description"]
       end
 
-      def arguments
-        playbook["arguments"] || []
+      def usage
+        arguments.collect(&:upcase).unshift(@command).join(" ")
       end
 
-      def usage
-        [@command, arguments.collect(&:upcase), "HOST"].flatten.join(" ")
+      def arguments
+        (playbook["arguments"] || []) + %w(host)
+      end
+
+      def constants
+        playbook["constants"] || {}
       end
 
       def options
@@ -72,18 +64,32 @@ module VPS
       end
 
       def tasks
-        tasks = [playbook["tasks"]].flatten.compact
+        @tasks ||= begin
+          tasks = [playbook["tasks"]].flatten.compact
 
-        if requires_confirmation?
-          tasks.unshift({
-            "task" => :confirm,
-            "question" => playbook["confirm"],
-            "indent" => false,
-            "n" => :abort
-          })
+          if requires_confirmation?
+            tasks.unshift({
+              "task" => :confirm,
+              "question" => playbook["confirm"],
+              "indent" => false,
+              "n" => :abort
+            })
+          end
+
+          Tasks.new(tasks)
         end
+      end
 
-        tasks
+      def run!(args, options)
+        hash = Hash[arguments.zip(args)]
+        state = State.new(hash.merge(options).merge(constants))
+        run(state)
+      end
+
+      def run(state)
+        state.scope do
+          tasks.run(state)
+        end
       end
 
     private

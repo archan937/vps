@@ -7,10 +7,10 @@ module VPS
 
         SERVER_VERSION = "SERVER_VERSION"
 
-        def initialize(host, playbook, options)
-          @host = host
-          @user = playbook["user"]
-          @stack = [options.with_indifferent_access]
+        def initialize(hash = {})
+          @stack = [hash.with_indifferent_access]
+          @host = fetch(:host)
+          @user = fetch(:user)
         end
 
         def dry_run?
@@ -21,13 +21,6 @@ module VPS
           stack.unshift(HashWithIndifferentAccess.new)
           yield
           stack.shift
-        end
-
-        def resolve(string)
-          string.gsub(/\{\{(\{?)\s*(.*?)\s*\}\}\}?/) do
-            value = self[$2]
-            ($1 == "{") ? value.inspect : value
-          end if string
         end
 
         def fetch(key, default = nil)
@@ -43,6 +36,13 @@ module VPS
 
         def []=(key, value)
           stack.first[key] = value
+        end
+
+        def resolve(string)
+          string.gsub(/\{\{(\{?)\s*(.*?)\s*\}\}\}?/) do
+            value = self[$2]
+            ($1 == "{") ? value.inspect : value
+          end if string
         end
 
         def execute(command, user = nil)
@@ -85,14 +85,14 @@ module VPS
 
       private
 
-        def ssh
-          @ssh ||= Net::SSH.start(@host, @user)
-        rescue Net::SSH::AuthenticationFailed => e
-          raise AuthenticationFailedError, e.message
-        end
-
         def stack
           @stack
+        end
+
+        def ssh
+          @ssh ||= Net::SSH.start(@host, @user)
+        rescue StandardError => e
+          raise AuthenticationFailedError, e.message
         end
 
       end

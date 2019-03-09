@@ -22,8 +22,7 @@ module VPS
       method_options playbook.options if playbook.options
       define_method playbook.command do |*args|
         start = Time.now
-        host = args[playbook.arguments.size]
-        playbook.run!(host, options, args)
+        playbook.run!(args, options)
         puts "\nDone. ".cyan + "#{(Time.now - start).round(3)}s".gray
       end
     end

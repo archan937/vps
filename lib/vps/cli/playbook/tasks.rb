@@ -10,17 +10,11 @@ module VPS
         end
 
         def initialize(tasks)
-          @tasks = tasks.compact.freeze
+          @tasks = [tasks].flatten.compact
         end
 
-        def run!(state)
-          state.scope do
-            run(state, @tasks)
-          end
-        end
-
-        def run(state, tasks)
-          [tasks].flatten.compact.each do |task|
+        def run(state)
+          @tasks.each do |task|
             case task
             when :continue
               # next
@@ -42,7 +36,7 @@ module VPS
 
         def when(state, options)
           if state[options[:boolean]]
-            run(state, options[:run])
+            run_tasks(state, options[:run])
           end
         end
 
@@ -50,7 +44,7 @@ module VPS
           answer = Ask.confirm(question(options)) ? "y" : "n"
           tasks = options[answer]
           set(state, options, answer)
-          run(state, tasks)
+          run_tasks(state, tasks)
         end
 
         def multiselect(state, options)
@@ -124,14 +118,18 @@ module VPS
           end
         end
 
-          def question(options)
-            (options[:indent] == false ? "" : "   ") + options[:question]
-          end
+        def question(options)
+          (options[:indent] == false ? "" : "   ") + options[:question]
+        end
 
         def set(state, options, answer)
           if as = options[:as]
             state[as] = answer
           end
+        end
+
+        def run_tasks(state, tasks)
+          Tasks.new(tasks).run(state)
         end
 
       end
