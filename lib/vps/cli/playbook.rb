@@ -6,7 +6,6 @@ module VPS
     class Playbook
 
       class NotFoundError < VPS::CLI::Error; end
-      class MissingConfirmationError < VPS::CLI::Error; end
 
       DIRECTORY = File.expand_path(File.join(__FILE__, "../../../../playbooks"))
       EXTNAME = ".yml"
@@ -40,8 +39,6 @@ module VPS
 
         @playbook = YAML.load_file(playbook)
         @command = command
-
-        assert_confirmation!
       end
 
       def run!(host, options)
@@ -89,12 +86,6 @@ module VPS
 
       def requires_confirmation?
         playbook["confirm"].to_s.strip != ""
-      end
-
-      def assert_confirmation!
-        if @command && !requires_confirmation?
-          raise MissingConfirmationError, "Missing confirmation for #{playbook.inspect}"
-        end
       end
 
     end
