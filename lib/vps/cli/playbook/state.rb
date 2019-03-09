@@ -45,7 +45,7 @@ module VPS
 
         def execute(command, user = nil)
           if user
-            command = "sudo -u #{user} -H bash -c #{command.inspect}"
+            command = "sudo -u #{user} -H sh -c #{command.inspect}"
           end
           puts "🏄‍♀️  ~> ".gray + command.yellow
           unless dry_run?
