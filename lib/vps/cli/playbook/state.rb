@@ -9,8 +9,6 @@ module VPS
 
         def initialize(hash = {})
           @stack = [hash.with_indifferent_access]
-          @host = fetch(:host)
-          @user = fetch(:user)
         end
 
         def dry_run?
@@ -90,7 +88,7 @@ module VPS
         end
 
         def ssh
-          @ssh ||= Net::SSH.start(@host, @user)
+          @ssh ||= Net::SSH.start(fetch(:host), fetch(:user))
         rescue StandardError => e
           raise AuthenticationFailedError, e.message
         end

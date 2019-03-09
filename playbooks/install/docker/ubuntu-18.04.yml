@@ -26,7 +26,7 @@ tasks:
     command: sudo apt-get update
   - description: Installing Docker
     task: remote_execute
-    command: sudo apt install -y docker-ce
+    command: sudo apt install -y docker-ce docker-compose
   - description: Adding current user to the docker group
     task: remote_execute
     command: sudo usermod -aG docker ${USER}

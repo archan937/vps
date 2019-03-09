@@ -23,7 +23,7 @@ module VPS
             else
               name, options = resolve(task)
               if name
-                if description = options[:description]
+                if description = resolve(options[:description])
                   puts "\n== ".yellow + description.green
                 end
                 send(name, state, options)
