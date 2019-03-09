@@ -79,11 +79,18 @@ module VPS
             puts "☕  ~> ".gray + command.yellow
             unless state.dry_run?
               start = Time.now
-              `#{command}`.tap do |result|
-                result = result.gsub(/^/, "   ").strip
-                puts "   #{result}" unless result.blank?
-                puts "   #{(Time.now - start).round(3)}s".gray
+              result = []
+
+              IO.popen(command).each do |data|
+                unless data.blank?
+                  data = data.split("\n").reject(&:blank?)
+                  puts "   " + data.join("\n   ")
+                  result.concat data
+                end
               end
+
+              puts "   #{(Time.now - start).round(3)}s".gray
+              result.join("\n")
             end
           end
           set(state, options, output)
