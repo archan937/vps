@@ -13,10 +13,10 @@ tasks:
     command: docker save {{ image_tag }} | gzip > /tmp/{{ zip_file }}
   - description: Server copying Docker image ZIP file
     task: execute
-    command: scp /tmp/{{ zip_file }} {{ host }}:/tmp/{{ zip_file }}
+    command: scp /tmp/{{ zip_file }} {{ host }}:/tmp/{{ zip_file }} > /dev/tty
   - description: Server copying docker-compose.yml
     task: execute
-    command: scp docker-compose.yml {{ host }}:/tmp/docker-compose.yml
+    command: scp docker-compose.yml {{ host }}:/tmp/docker-compose.yml > /dev/tty
   - description: Running new Docker image on server
     task: remote_execute
     command:
