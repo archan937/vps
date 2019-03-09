@@ -41,8 +41,12 @@ module VPS
         @command = command
       end
 
-      def run!(host, options)
-        run(State.new(host, playbook, options))
+      def run!(host, options, args = [])
+        state = State.new(host, playbook, options)
+        arguments.each_with_index do |argument, index|
+          state[argument] = args[index]
+        end
+        run(state)
       end
 
       def run(state)
@@ -53,8 +57,12 @@ module VPS
         playbook["description"]
       end
 
+      def arguments
+        playbook["arguments"] || []
+      end
+
       def usage
-        [@command, "[HOST]"].join(" ")
+        [@command, arguments.collect(&:upcase), "HOST"].flatten.join(" ")
       end
 
       def options

@@ -105,7 +105,7 @@ module VPS
         end
 
         def playbook(state, options)
-          Playbook.run(options[:playbook], state)
+          Playbook.run(state.resolve(options[:playbook]), state)
         end
 
         def print(state, options)
