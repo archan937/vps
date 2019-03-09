@@ -82,12 +82,12 @@ module VPS
 
       def run!(args, options)
         hash = Hash[arguments.zip(args)]
-        state = State.new(hash.merge(options).merge(constants))
+        state = State.new(hash.merge(options))
         run(state)
       end
 
       def run(state)
-        state.scope do
+        state.scope(constants) do
           tasks.run(state)
         end
       end

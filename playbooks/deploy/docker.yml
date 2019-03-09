@@ -1,0 +1,27 @@
+---
+source:
+  - http://dimafeng.com/2015/10/17/docker-distribution/
+constants:
+  image_tag: vps_docker_build
+  zip_file: vps_docker_image.gzip
+tasks:
+  - description: Building Docker image
+    task: execute
+    command: docker build --no-cache -t {{ image_tag }} .
+  - description: Saving Docker image as ZIP file
+    task: execute
+    command: docker save {{ image_tag }} | gzip > /tmp/{{ zip_file }}
+  - description: Server copying Docker image ZIP file
+    task: execute
+    command: scp /tmp/{{ zip_file }} {{ host }}:/tmp/{{ zip_file }}
+  - description: Server copying docker-compose.yml
+    task: execute
+    command: scp docker-compose.yml {{ host }}:/tmp/docker-compose.yml
+  - description: Running new Docker image on server
+    task: remote_execute
+    command:
+      cd /tmp
+      docker-compose stop &&
+      docker rm {{ image_tag }} &&
+      gunzip < /tmp/{{ zip_file }} | docker load &&
+      docker-compose start

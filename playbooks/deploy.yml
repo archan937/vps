@@ -1,0 +1,8 @@
+---
+description:
+  Deploy web application to the server
+arguments:
+  - tool
+tasks:
+  - task: playbook
+    playbook: "deploy/{{ tool }}"

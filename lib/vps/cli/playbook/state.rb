@@ -17,8 +17,8 @@ module VPS
           !!fetch(:d)
         end
 
-        def scope
-          stack.unshift(HashWithIndifferentAccess.new)
+        def scope(constants = {})
+          stack.unshift(constants.with_indifferent_access)
           yield
           stack.shift
         end
