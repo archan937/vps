@@ -1,0 +1,32 @@
+---
+source:
+  - https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository
+  - https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
+tasks:
+  - description: Updating apt package index
+    task: remote_execute
+    command: sudo apt-get update
+  - description: Installing packages which let apt use packages over HTTPS
+    task: remote_execute
+    command:
+      sudo apt-get install
+        apt-transport-https
+        ca-certificates
+        curl
+        gnupg-agent
+        software-properties-common
+  - description: Adding Docker’s official GPG key
+    task: remote_execute
+    command: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - description: Adding the Docker repository to APT sources
+    task: remote_execute
+    command: sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+  - description: Updating apt package index
+    task: remote_execute
+    command: sudo apt-get update
+  - description: Installing Docker
+    task: remote_execute
+    command: sudo apt install -y docker-ce
+  - description: Checking Docker state
+    task: remote_execute
+    command: sudo systemctl status docker

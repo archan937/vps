@@ -1,0 +1,8 @@
+---
+description:
+  Install software on the server
+arguments:
+  - name
+tasks:
+  - task: playbook
+    playbook: "install/{{ name }}"
