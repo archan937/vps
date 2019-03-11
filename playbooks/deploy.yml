@@ -1,6 +1,8 @@
 ---
 description:
   Deploy web application to the server
+usage:
+  deploy TOOL [HOST]
 arguments:
   - tool
 tasks:
