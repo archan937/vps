@@ -79,6 +79,10 @@ module VPS
           end
         end
 
+        def home_directory
+          @home_directory ||= ssh.exec!("pwd").strip
+        end
+
         def server_version
           @server_version ||= begin
             release = ssh.exec!("cat /etc/lsb-release")
