@@ -51,7 +51,7 @@ tasks:
     tasks: << preload >>
   - description: Unzipping and loading docker image
     task: remote_execute
-    command: gunzip < /tmp/{{ zip_file }} | docker load
+    command: gunzip < /tmp/{{ image }}.gzip | docker load
   - task: run_tasks
     tasks: << postload >>
   - description: Checking running docker images
