@@ -37,11 +37,19 @@ module VPS
           stack.first[key] = value
         end
 
-        def resolve(string)
-          string.gsub(/\{\{(\{?)\s*(.*?)\s*\}\}\}?/) do
-            value = self[$2]
-            ($1 == "{") ? value.inspect : value
-          end if string
+        def resolve(arg)
+          if arg.is_a?(String)
+            if arg.match(/^<<\s*(.*?)\s*>>$/)
+              self[$1]
+            else
+              arg.gsub(/\{\{(\{?)\s*(.*?)\s*\}\}\}?/) do
+                value = self[$2]
+                ($1 == "{") ? value.inspect : value
+              end
+            end
+          else
+            arg
+          end
         end
 
         def execute(command, user = nil)
