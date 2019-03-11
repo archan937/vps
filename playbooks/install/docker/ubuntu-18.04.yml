@@ -30,6 +30,6 @@ tasks:
   - description: Adding current user to the docker group
     task: remote_execute
     command: sudo usermod -aG docker ${USER}
-  - description: Checking Docker state
+  - description: Checking docker state
     task: remote_execute
     command: sudo systemctl status docker

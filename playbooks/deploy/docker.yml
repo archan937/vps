@@ -1,37 +1,59 @@
 ---
 source:
   - http://dimafeng.com/2015/10/17/docker-distribution/
+usage:
+  deploy TOOL [HOST]
 constants:
-  image_tag: vps_docker_image
-  zip_file: vps_docker_image.gzip
+  config: vps-deploy.yml
 tasks:
+  - description: Obtaining deploy config ({{ config }})
+    task: obtain_config
+    from: "{{ config }}"
+    config:
+      host: << host >>
+      user: << user >>
+      image:
+        type: input
+        question: Enter name for the image
+        default: "{{ dirname }}"
+      release_path:
+        type: input
+        question: Enter release path on the server
+        default: ~/app
+      preload:
+        - description: Stopping current containers
+          task: remote_execute
+          command: cd {{ release_path }} && docker-compose stop
+        - description: Removing current container
+          task: remote_execute
+          command: docker container rm $(docker container ls -f ancestor={{ image }} -aq)
+        - description: Removing current image
+          task: remote_execute
+          command: docker image rm {{ image }}
+      postload:
+        - description: Uploading docker-compose.yml
+          task: upload
+          file: docker-compose.yml
+          remote_path: "{{ release_path }}/docker-compose.yml"
+        - description: Starting containers
+          task: remote_execute
+          command: cd {{ release_path }} && docker-compose up -d
   - description: Building docker image
     task: execute
-    command: docker build --no-cache -t {{ image_tag }} .
+    command: docker build --no-cache -t {{ image }} .
   - description: Saving docker image as .gzip file
     task: execute
-    command: docker save {{ image_tag }} | gzip > /tmp/{{ zip_file }}
-  - description: Server copying {{ zip_file }}
-    task: execute
-    command: scp /tmp/{{ zip_file }} {{ host }}:/tmp/{{ zip_file }} > /dev/tty
-  - description: Stopping current containers
-    task: remote_execute
-    command: cd /tmp && docker-compose stop
-  - description: Removing current container
-    task: remote_execute
-    command: docker container rm $(docker container ls -f ancestor={{ image_tag }} -aq)
-  - description: Removing current image
-    task: remote_execute
-    command: docker image rm {{ image_tag }}
+    command: docker save {{ image }} | gzip > /tmp/{{ image }}.gzip
+  - description: Uploading {{ image }}.gzip
+    task: upload
+    file: /tmp/{{ image }}.gzip
+  - task: run_tasks
+    tasks: << preload >>
   - description: Unzipping and loading docker image
     task: remote_execute
     command: gunzip < /tmp/{{ zip_file }} | docker load
-  - description: Server copying docker-compose.yml
-    task: execute
-    command: scp docker-compose.yml {{ host }}:/tmp/docker-compose.yml > /dev/tty
-  - description: Starting containers
-    task: remote_execute
-    command: cd /tmp && docker-compose up -d
+  - task: run_tasks
+    tasks: << postload >>
   - description: Checking running docker images
     task: remote_execute
     command: docker ps

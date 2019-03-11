@@ -1,3 +1,4 @@
+require "json"
 require "yaml"
 require "thor"
 require "inquirer"

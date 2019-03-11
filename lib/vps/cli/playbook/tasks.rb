@@ -16,27 +16,57 @@ module VPS
         def run(state)
           @tasks.each do |task|
             case task
-            when :continue
-              # next
+            when :continue # next
             when :abort
               raise Interrupt
             else
-              name, options = resolve(task)
-              if name
-                if description = resolve(options[:description])
-                  puts "\n== ".yellow + description.green
-                end
-                send(name, state, options)
-              else
-                raise InvalidTaskError, "Invalid task #{task.inspect}"
-              end
+              run_task(state, task)
             end
+          end
+        end
+
+        def run_tasks(state, options)
+          tasks = state.resolve(options[:tasks])
+          Tasks.new(tasks).run(state)
+        end
+
+        def obtain_config(state, options)
+          from = state.resolve(options[:from])
+          config = (File.exists?(from) ? YAML.load_file(from) : {}).with_indifferent_access
+          changed = false
+
+          options[:config].each do |key, spec|
+            if config.has_key?(key)
+              set(state, key, config[key])
+            else
+              spec = spec.with_indifferent_access if spec.is_a?(Hash)
+
+              if spec.is_a?(Hash) && spec[:type] && spec[:question]
+                spec[:task] = spec.delete(:type)
+                spec[:as] = key
+                run_task(state, spec)
+              else
+                value = state.resolve(spec)
+                set(state, key, value)
+              end
+
+              config[key] = state[key]
+              changed = true
+            end
+          end
+
+          if changed
+            config = JSON.parse(config.to_json)
+            File.write(from, config.to_yaml)
+            puts "   written #{from}".gray
+          else
+            puts "   found #{from}".gray
           end
         end
 
         def when(state, options)
           if state[options[:boolean]]
-            run_tasks(state, options[:run])
+            run_tasks(state, {:tasks => options[:run]})
           end
         end
 
@@ -44,7 +74,7 @@ module VPS
           answer = Ask.confirm(question(options)) ? "y" : "n"
           tasks = options[answer]
           set(state, options, answer)
-          run_tasks(state, tasks)
+          run_tasks(state, {:tasks => tasks})
         end
 
         def multiselect(state, options)
@@ -69,7 +99,7 @@ module VPS
         end
 
         def input(state, options)
-          answer = Ask.input(question(options), default: options[:default])
+          answer = Ask.input(question(options), default: state.resolve(options[:default]))
           set(state, options, answer)
         end
 
@@ -105,6 +135,19 @@ module VPS
           set(state, options, output)
         end
 
+        def upload(state, options)
+          host = state[:host]
+
+          file = state.resolve(options[:file])
+          remote_path = options[:remote_path] ? state.resolve(options[:remote_path]) : file
+          remote_path = remote_path.gsub("~", state.home_directory)
+
+          file = "-r #{file}" if File.directory?(file)
+
+          remote_execute(state, {:command => "mkdir -p #{File.dirname(remote_path)}"})
+          execute(state, {:command => "scp #{file} #{host}:#{remote_path} > /dev/tty"})
+        end
+
         def playbook(state, options)
           Playbook.run(state.resolve(options[:playbook]), state)
         end
@@ -115,7 +158,19 @@ module VPS
 
       private
 
-        def resolve(task)
+        def run_task(state, task)
+          name, options = derive_task(task)
+          if name
+            if description = state.resolve(options[:description])
+              puts "\n== ".yellow + description.green
+            end
+            send(name, state, options)
+          else
+            raise InvalidTaskError, "Invalid task #{task.inspect}"
+          end
+        end
+
+        def derive_task(task)
           if task.is_a?(Hash)
             task = task.with_indifferent_access
             name = task.delete(:task).to_sym
@@ -129,14 +184,10 @@ module VPS
           (options[:indent] == false ? "" : "   ") + options[:question]
         end
 
-        def set(state, options, answer)
-          if as = options[:as]
-            state[as] = answer
+        def set(state, as, value)
+          if key = (as.is_a?(Hash) ? as[:as] : as)
+            state[key] = value
           end
-        end
-
-        def run_tasks(state, tasks)
-          Tasks.new(tasks).run(state)
         end
 
       end
