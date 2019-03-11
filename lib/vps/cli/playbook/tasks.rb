@@ -144,6 +144,8 @@ module VPS
 
           return if file.blank?
 
+          remote_path = remote_path.gsub("~", state.home_directory)
+
           remote_execute(state, {:command => "mkdir -p #{File.dirname(remote_path)}"})
           execute(state, {:command => "scp #{file} #{host}:#{remote_path} > /dev/tty"})
         end
@@ -155,6 +157,8 @@ module VPS
           remote_path = options[:remote_path] ? state.resolve(options[:remote_path]) : directory
 
           return if directory.blank?
+
+          remote_path = remote_path.gsub("~", state.home_directory)
 
           remote_execute(state, {:command => "mkdir -p #{File.dirname(remote_path)}"})
           execute(state, {:command => "rsync #{options[:options]} #{directory} #{host}:#{remote_path} > /dev/tty"})
