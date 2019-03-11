@@ -46,7 +46,7 @@ module VPS
       end
 
       def usage
-        arguments.collect(&:upcase).unshift(@command).join(" ")
+        playbook["usage"] || arguments.collect(&:upcase).unshift(@command).join(" ")
       end
 
       def arguments
