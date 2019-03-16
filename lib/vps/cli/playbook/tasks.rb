@@ -106,7 +106,7 @@ module VPS
         def execute(state, options)
           output = [options[:command]].flatten.inject(nil) do |_, command|
             command = state.resolve(command)
-            puts "☕  ~> ".gray + command.yellow
+            puts "☕ ~> ".gray + command.yellow
             unless state.dry_run?
               start = Time.now
               result = []

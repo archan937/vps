@@ -56,7 +56,7 @@ module VPS
           if user
             command = "sudo -u #{user} -H sh -c #{command.inspect}"
           end
-          puts "🏄‍♀️  ~> ".gray + command.yellow
+          puts "🏄‍♀️ ~> ".gray + command.yellow
           unless dry_run?
             start = Time.now
             result = []
