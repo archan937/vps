@@ -88,6 +88,8 @@ tasks:
       - task: remote_execute
         command:
           - ufw allow OpenSSH
+          - ufw allow http
+          - ufw allow https
           - yes y | ufw enable
   - description: Setting up the server timezone
     task: when
