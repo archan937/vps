@@ -95,6 +95,12 @@ module VPS
           run_tasks(state, {:tasks => tasks})
         end
 
+        def select(state, options)
+          list = state.resolve(options[:options])
+          index = Ask.list(question(options), list)
+          set(state, options, list[index])
+        end
+
         def multiselect(state, options)
           names, labels, defaults = [], [], []
 
