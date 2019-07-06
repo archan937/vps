@@ -1,8 +1,6 @@
 ---
 source:
   - http://dimafeng.com/2015/10/17/docker-distribution/
-constants:
-  config: vps-deploy.yml
 tasks:
   - description: Obtaining deploy config ({{ config }})
     task: obtain_config
@@ -10,6 +8,7 @@ tasks:
     config:
       host: << host >>
       user: << user >>
+      tool: << tool >>
       image:
         type: input
         question: Enter name for the image

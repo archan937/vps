@@ -6,6 +6,17 @@ usage:
 arguments:
   - host
   - tool
+constants:
+  config: ~/.vps/{{ host }}/config.yml
 tasks:
+  - task: ensure
+    argument: tool
+    fallbacks:
+      - task: read_config
+        from: "{{ config }}:tool"
+      - description: Choose which deploy tool to use
+        task: select
+        question: Which deployment tool do you want to use?
+        options: << playbooks >>
   - task: playbook
     playbook: "deploy/{{ tool }}"
