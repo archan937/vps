@@ -4,6 +4,24 @@ module VPS
       class State
 
         class AuthenticationFailedError < VPS::CLI::Error; end
+        class SSHMock
+          def initialize
+            puts "[ Mocking SSH connection with Ubuntu 18.04.2 LTS server ... ]".cyan
+          end
+          def exec!(command)
+            case command
+            when "cat /etc/lsb-release"
+              <<-LSB
+              DISTRIB_ID=Ubuntu
+              DISTRIB_RELEASE=18.04
+              DISTRIB_CODENAME=bionic
+              DISTRIB_DESCRIPTION="Ubuntu 18.04.2 LTS"
+              LSB
+            else
+              puts command
+            end
+          end
+        end
 
         SERVER_VERSION = "SERVER_VERSION"
 
@@ -101,7 +119,13 @@ module VPS
         end
 
         def ssh
-          @ssh ||= Net::SSH.start(fetch(:host), fetch(:user))
+          @ssh ||= begin
+            if dry_run?
+              SSHMock.new
+            else
+              Net::SSH.start(fetch(:host), fetch(:user))
+            end
+          end
         rescue StandardError => e
           raise AuthenticationFailedError, e.message
         end
