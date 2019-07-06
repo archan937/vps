@@ -30,6 +30,18 @@ module VPS
           Tasks.new(tasks).run(state)
         end
 
+        def ensure(state, options)
+          argument = state.resolve(options[:argument])
+
+          if state[argument].blank?
+            options[:fallbacks].each do |task|
+              unless (value = run_task(state, task.merge(as: argument))).blank?
+                set(state, argument, value)
+              end
+            end
+          end
+        end
+
         def obtain_config(state, options)
           from = state.resolve(options[:from])
           config = (File.exists?(from) ? YAML.load_file(from) : {}).with_indifferent_access
