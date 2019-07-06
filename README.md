@@ -20,7 +20,7 @@ VPS is a command-line-interface, you can print help instructions:
       vps deploy TOOL [HOST]  # Deploy web application to the server
       vps help [COMMAND]      # Describe available commands or one specific command
       vps init HOST           # Execute an initial server setup
-      vps install NAME HOST   # Install software on the server
+      vps install TOOL HOST   # Install software on the server
 
 ## Contact me
 

@@ -2,7 +2,7 @@
 description:
   Install software on the server
 arguments:
-  - name
+  - tool
 tasks:
   - task: playbook
-    playbook: "install/{{ name }}"
+    playbook: "install/{{ tool }}"
