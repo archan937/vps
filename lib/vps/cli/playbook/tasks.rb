@@ -66,6 +66,7 @@ module VPS
 
         def when(state, options)
           if state[options[:boolean]]
+            puts_description(state, options)
             run_tasks(state, {:tasks => options[:run]})
           end
         end
@@ -177,9 +178,7 @@ module VPS
         def run_task(state, task)
           name, options = derive_task(task)
           if name
-            if description = state.resolve(options[:description])
-              puts "\n== ".yellow + description.green
-            end
+            puts_description(state, options) unless name == :when
             send(name, state, options)
           else
             raise InvalidTaskError, "Invalid task #{task.inspect}"
@@ -193,6 +192,12 @@ module VPS
             if Tasks.available.include?(name)
               [name, task]
             end
+          end
+        end
+
+        def puts_description(state, options)
+          if description = state.resolve(options[:description])
+            puts "\n== ".yellow + description.green
           end
         end
 
