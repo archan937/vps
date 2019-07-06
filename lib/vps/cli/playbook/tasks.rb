@@ -42,6 +42,11 @@ module VPS
           end
         end
 
+        def read_config(state, options)
+          from, key = state.resolve(options[:from]).split(":")
+          YAML.load_file(from)[key] if File.exists?(from)
+        end
+
         def obtain_config(state, options)
           from = state.resolve(options[:from])
           config = (File.exists?(from) ? YAML.load_file(from) : {}).with_indifferent_access
