@@ -50,7 +50,7 @@ module VPS
       end
 
       def arguments
-        (playbook["arguments"] || []) + %w(host)
+        playbook["arguments"] || []
       end
 
       def constants

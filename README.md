@@ -17,10 +17,10 @@ VPS is a command-line-interface, you can print help instructions:
     $ vps help
     Commands:
       vps -v, [--version]     # Show VPS version number
-      vps deploy TOOL [HOST]  # Deploy web application to the server
+      vps deploy HOST [TOOL]  # Deploy web application to the server
       vps help [COMMAND]      # Describe available commands or one specific command
       vps init HOST           # Execute an initial server setup
-      vps install TOOL HOST   # Install software on the server
+      vps install HOST TOOL   # Install software on the server
 
 ## Contact me
 

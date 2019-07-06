@@ -2,8 +2,9 @@
 description:
   Deploy web application to the server
 usage:
-  deploy TOOL [HOST]
+  deploy HOST [TOOL]
 arguments:
+  - host
   - tool
 tasks:
   - task: playbook

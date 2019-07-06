@@ -2,6 +2,7 @@
 description:
   Install software on the server
 arguments:
+  - host
   - tool
 tasks:
   - task: playbook

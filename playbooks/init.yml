@@ -5,6 +5,8 @@ confirm:
   Are you sure you want to initially setup your VPS?
 constants:
   user: root
+arguments:
+  - host
 tasks:
   - task: playbook
     playbook: init
