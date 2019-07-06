@@ -36,6 +36,9 @@ module VPS
 
         def scope(constants = {})
           stack.unshift(constants.with_indifferent_access)
+          constants.keys.each do |key|
+            self[key] = resolve(self[key])
+          end
           yield
           stack.shift
         end
