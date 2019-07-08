@@ -6,4 +6,4 @@ arguments:
   - tool
 tasks:
   - task: playbook
-    playbook: "install/{{ tool }}"
+    playbook: install/{{ tool }}

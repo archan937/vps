@@ -7,7 +7,8 @@ arguments:
   - host
   - tool
 constants:
-  config: ~/.vps/{{ host }}/config.yml
+  config_path: ~/.vps/{{ host }}
+  config: "{{ config_path }}/config.yml"
 tasks:
   - task: ensure
     argument: tool
@@ -19,4 +20,4 @@ tasks:
         question: Which deployment tool do you want to use?
         options: << playbooks >>
   - task: playbook
-    playbook: "deploy/{{ tool }}"
+    playbook: deploy/{{ tool }}
