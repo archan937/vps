@@ -38,6 +38,7 @@ module VPS
         end
 
         @playbook = {"constants" => {}}.merge(YAML.load_file(playbook))
+        @playbook["constants"]["pwd"] = File.dirname(playbook)
 
         unless (playbooks = Dir[playbook.gsub(/\.\w+$/, "/*.yml")].collect{|yml| File.basename(yml, ".yml")}).empty?
           @playbook["constants"]["playbooks"] = playbooks
