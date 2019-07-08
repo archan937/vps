@@ -1,7 +1,9 @@
 require "fileutils"
 require "json"
 require "yaml"
+require "ostruct"
 require "thor"
+require "erubis"
 require "inquirer"
 require "net/ssh"
 

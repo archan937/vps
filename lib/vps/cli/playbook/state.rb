@@ -61,6 +61,27 @@ module VPS
           stack.first[key] = value
         end
 
+        def to_binding(object = self)
+          case object
+          when State
+            keys = stack.collect(&:keys).flatten.uniq
+            keys.inject({}) do |hash, key|
+              hash[key] = to_binding(self[key])
+              hash
+            end
+          when Hash
+            hash = object.inject({}) do |hash, (key, value)|
+              hash[key] = to_binding(resolve(value))
+              hash
+            end
+            OpenStruct.new(hash)
+          when Array
+            object.collect{|object| to_binding(object)}
+          else
+            object
+          end
+        end
+
         def resolve(arg)
           if arg.is_a?(String)
             if arg.match(/^<<\s*(.*?)\s*>>$/)

@@ -143,6 +143,18 @@ module VPS
           set(state, options, answer)
         end
 
+        def generate_file(state, options)
+          erb = File.read("#{state[:pwd]}/#{state.resolve(options[:template])}")
+          template = Erubis::Eruby.new(erb)
+          target = File.expand_path(state.resolve(options[:target]))
+
+          unless state.dry_run?
+            File.open(target, "w") do |file|
+              file.write(template.result(state.to_binding))
+            end
+          end
+        end
+
         def execute(state, options)
           output = [options[:command]].flatten.inject(nil) do |_, command|
             command = state.resolve(command)
