@@ -75,7 +75,8 @@ module VPS
 
           if changed
             config = JSON.parse(config.to_json)
-            File.write(from, config.to_yaml)
+              FileUtils.mkdir_p(File.dirname(from))
+              File.write(from, config.to_yaml)
             puts "   written #{from}".gray
           else
             puts "   found #{from}".gray
