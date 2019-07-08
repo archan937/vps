@@ -53,7 +53,9 @@ module VPS
         end
 
         def [](key)
-          fetch(key)
+          key.to_s.split(".").inject(self) do |hash, key|
+            (hash || {}).fetch(key)
+          end
         end
 
         def []=(key, value)
