@@ -31,6 +31,11 @@ module VPS
       end
     end
 
+    desc "edit HOST", "Edit the VPS configuration file"
+    def edit(host)
+      `open ~/.vps/#{host}/config.yml`
+    end
+
     desc "-v, [--version]", "Show VPS version number"
     map %w(-v --version) => :version
     def version
