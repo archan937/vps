@@ -37,12 +37,13 @@ module VPS
           raise NotFoundError, "Could not find playbook #{playbook.inspect}"
         end
 
-        @playbook = YAML.load_file(playbook)
-        @command = command
+        @playbook = {"constants" => {}}.merge(YAML.load_file(playbook))
 
         unless (playbooks = Dir[playbook.gsub(/\.\w+$/, "/*.yml")].collect{|yml| File.basename(yml, ".yml")}).empty?
-          @playbook["constants"] = constants.merge({"playbooks" => playbooks})
+          @playbook["constants"]["playbooks"] = playbooks
         end
+
+        @command = command
       end
 
       def description
