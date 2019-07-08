@@ -26,7 +26,7 @@ module VPS
         end
 
         def run_tasks(state, options)
-          tasks = state.resolve(options[:tasks])
+          tasks = (state.resolve(options[:tasks]) || []).compact
           Tasks.new(tasks).run(state)
         end
 
