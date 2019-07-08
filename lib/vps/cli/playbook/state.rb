@@ -18,7 +18,7 @@ module VPS
               DISTRIB_DESCRIPTION="Ubuntu 18.04.2 LTS"
               LSB
             else
-              puts command
+              raise "Encountered unexpected command: #{command}"
             end
           end
         end
