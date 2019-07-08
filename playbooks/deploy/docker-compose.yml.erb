@@ -3,15 +3,15 @@ version: "3"
 services:
 
   <%- services.each do |service| %>
-  <% service["name"] %>:
-    image: <% service["image"] %>
-    container_name: <% service["name"] %>
+  <%= service.name %>:
+    image: <%= service.image %>
+    container_name: <%= service.name %>
 
   <%- end %>
   <%- images.each do |image| %>
-  <% image["name"] %>:
-    image: <% image["name"] %>
-    container_name: <% image["name"] %>
+  <%= image.name %>:
+    image: <%= image.name %>
+    container_name: <%= image.name %>
 
   <%- end %>
 volumes:

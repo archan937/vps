@@ -1,56 +1,86 @@
 ---
 source:
   - http://dimafeng.com/2015/10/17/docker-distribution/
+constants:
+  docker_compose_file: "{{ config_path }}/docker-compose.yml"
 tasks:
   - description: Obtaining deploy config ({{ config }})
     task: obtain_config
     from: "{{ config }}"
     config:
-      host: << host >>
-      user: << user >>
       tool: << tool >>
-      image:
-        type: input
-        question: Enter name for the image
-        default: "{{ dirname }}"
+      user: << user >>
       release_path:
         type: input
         question: Enter release path on the server
         default: ~/app
+      services:
+        -
+      images:
+        -
       preload:
-        - description: Stopping current containers
-          task: remote_execute
-          command: cd {{ release_path }} && docker-compose stop
-        - description: Removing current container
-          task: remote_execute
-          command: docker container rm $(docker container ls -f ancestor={{ image }} -aq)
-        - description: Removing current image
-          task: remote_execute
-          command: docker image rm {{ image }}
+        -
       postload:
-        - description: Uploading docker-compose.yml
-          task: upload
-          file: docker-compose.yml
-          remote_path: "{{ release_path }}/docker-compose.yml"
-        - description: Starting containers
-          task: remote_execute
-          command: cd {{ release_path }} && docker-compose up -d
-  - description: Building docker image
-    task: execute
-    command: docker build --no-cache -t {{ image }} .
-  - description: Saving docker image as .gzip file
-    task: execute
-    command: docker save {{ image }} | gzip > /tmp/{{ image }}.gzip
-  - description: Uploading {{ image }}.gzip
-    task: upload
-    file: /tmp/{{ image }}.gzip
+        -
+  - description: Building docker images
+    task: loop
+    through: << images >>
+    as: image
+    run:
+      - task: execute
+        command: docker build --no-cache -t {{ image.name }} {{ image.path }}
+  - description: Saving docker images as .gzip file
+    task: loop
+    through: << images >>
+    as: image
+    run:
+      - task: execute
+        command: docker save {{ image.name }} | gzip > /tmp/{{ image.name }}.gzip
+  - description: Uploading images
+    task: loop
+    through: << images >>
+    as: image
+    run:
+      - task: upload
+        file: /tmp/{{ image.name }}.gzip
+  - description: Stopping current containers
+    task: remote_execute
+    command: cd {{ release_path }} && docker-compose stop
+  - description: Removing current containers
+    task: loop
+    through: << images >>
+    as: image
+    run:
+      - task: remote_execute
+        command: docker container rm $(docker container ls -f ancestor={{ image.name }} -aq)
+  - description: Removing current images
+    task: loop
+    through: << images >>
+    as: image
+    run:
+      - task: remote_execute
+        command: docker image rm {{ image.name }}
   - task: run_tasks
     tasks: << preload >>
-  - description: Unzipping and loading docker image
-    task: remote_execute
-    command: gunzip < /tmp/{{ image }}.gzip | docker load
+  - description: Unzipping and loading docker images
+    task: loop
+    through: << images >>
+    as: image
+    run:
+      - task: remote_execute
+        command: gunzip < /tmp/{{ image.name }}.gzip | docker load
   - task: run_tasks
     tasks: << postload >>
+  - task: generate_file
+    template: docker-compose.yml.erb
+    target: "{{ docker_compose_file }}"
+  - description: Uploading docker-compose.yml
+    task: upload
+    file: "{{ docker_compose_file }}"
+    remote_path: "{{ release_path }}/docker-compose.yml"
+  - description: Starting containers
+    task: remote_execute
+    command: cd {{ release_path }} && docker-compose up -d
   - description: Checking running docker images
     task: remote_execute
     command: docker ps
