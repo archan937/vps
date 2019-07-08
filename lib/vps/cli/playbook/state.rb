@@ -6,7 +6,7 @@ module VPS
         class AuthenticationFailedError < VPS::CLI::Error; end
         class SSHMock
           def initialize
-            puts "[ Mocking SSH connection with Ubuntu 18.04.2 LTS server ... ]".cyan
+            puts "🏄‍♀️ ~> ".gray + "Mocking SSH connection with Ubuntu 18.04.2 LTS server".cyan
           end
           def exec!(command)
             case command
