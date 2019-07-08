@@ -29,7 +29,6 @@ module VPS
 
         def initialize(hash = {})
           @stack = [hash.with_indifferent_access]
-          self[:dirname] = File.basename(Dir.pwd)
         end
 
         def dry_run?
