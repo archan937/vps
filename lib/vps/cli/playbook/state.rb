@@ -17,6 +17,8 @@ module VPS
               DISTRIB_CODENAME=bionic
               DISTRIB_DESCRIPTION="Ubuntu 18.04.2 LTS"
               LSB
+            when "pwd"
+              "/home/showdown"
             else
               raise "Encountered unexpected command: #{command}"
             end
