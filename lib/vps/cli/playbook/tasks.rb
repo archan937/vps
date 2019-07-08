@@ -37,6 +37,7 @@ module VPS
             options[:fallbacks].each do |task|
               unless (value = run_task(state, task.merge(as: argument))).blank?
                 set(state, argument, value)
+                break
               end
             end
           end
