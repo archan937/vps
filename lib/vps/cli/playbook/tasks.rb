@@ -85,6 +85,18 @@ module VPS
           end
         end
 
+        def loop(state, options)
+          if (collection = (state.resolve(options[:through]) || []).compact).any?
+            puts_description(state, options)
+            as = state.resolve(options[:as])
+            collection.each do |item|
+              state.scope({as => item}) do
+                run_tasks(state, {:tasks => options[:run]})
+              end
+            end
+          end
+        end
+
         def when(state, options)
           if state[options[:boolean]]
             puts_description(state, options)
@@ -205,7 +217,7 @@ module VPS
         def run_task(state, task)
           name, options = derive_task(task)
           if name
-            puts_description(state, options) unless name == :when
+            puts_description(state, options) unless [:when, :loop].include?(name)
             send(name, state, options)
           else
             raise InvalidTaskError, "Invalid task #{task.inspect}"
