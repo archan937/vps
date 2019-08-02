@@ -84,14 +84,16 @@ module VPS
 
         def resolve(arg)
           if arg.is_a?(String)
-            if arg.match(/^<<\s*(.*?)\s*>>$/)
-              self[$1]
-            else
-              arg.gsub(/\{\{(\{?)\s*(.*?)\s*\}\}\}?/) do
-                value = self[$2]
-                ($1 == "{") ? value.inspect : value
+            value =
+              if arg.match(/^<<\s*(.*?)\s*>>$/)
+                self[$1]
+              else
+                arg.gsub(/\{\{(\{?)\s*(.*?)\s*\}\}\}?/) do
+                  value = self[$2]
+                  ($1 == "{") ? value.inspect : value
+                end
               end
-            end
+            value.include?("dir:") ? File.basename(value) : value
           else
             arg
           end
