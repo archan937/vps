@@ -2,77 +2,59 @@
 source:
   - http://dimafeng.com/2015/10/17/docker-distribution/
 constants:
-  docker_compose_file: "{{ config_path }}/docker-compose.yml"
+  docker_compose_file: "config:docker-compose.yml"
 tasks:
-  - description: Obtaining deploy config ({{ config }})
-    task: obtain_config
-    from: "{{ config }}"
-    config:
-      tool: << tool >>
-      user: << user >>
-      release_path:
-        type: input
-        question: Enter release path on the server
-        default: ~/app
-      services:
-        -
-      images:
-        -
-      preload:
-        -
-      postload:
-        -
   - description: Building docker images
     task: loop
-    through: << images >>
-    as: image
+    through: << upstreams >>
+    as: upstream
     run:
       - task: execute
-        command: docker build --no-cache -t {{ image.name }} {{ image.path }}
+        command: docker build --no-cache -t {{ upstream.name }} {{ upstream.path }}
   - description: Saving docker images as .gzip file
     task: loop
-    through: << images >>
-    as: image
+    through: << upstreams >>
+    as: upstream
     run:
       - task: execute
-        command: docker save {{ image.name }} | gzip > /tmp/{{ image.name }}.gzip
+        command: docker save {{ upstream.name }} | gzip > /tmp/{{ upstream.name }}.gzip
   - description: Uploading images
     task: loop
-    through: << images >>
-    as: image
+    through: << upstreams >>
+    as: upstream
     run:
       - task: upload
-        file: /tmp/{{ image.name }}.gzip
+        file: /tmp/{{ upstream.name }}.gzip
   - description: Stopping current containers
     task: remote_execute
     command: cd {{ release_path }} && docker-compose stop
   - description: Removing current containers
     task: loop
-    through: << images >>
-    as: image
+    through: << upstreams >>
+    as: upstream
     run:
       - task: remote_execute
-        command: docker container rm $(docker container ls -f ancestor={{ image.name }} -aq)
+        command: docker container rm $(docker container ls -f ancestor={{ upstream.name }} -aq)
   - description: Removing current images
     task: loop
-    through: << images >>
-    as: image
+    through: << upstreams >>
+    as: upstream
     run:
       - task: remote_execute
-        command: docker image rm {{ image.name }}
+        command: docker image rm {{ upstream.name }}
   - task: run_tasks
     tasks: << preload >>
   - description: Unzipping and loading docker images
     task: loop
-    through: << images >>
-    as: image
+    through: << upstreams >>
+    as: upstream
     run:
       - task: remote_execute
-        command: gunzip < /tmp/{{ image.name }}.gzip | docker load
+        command: gunzip < /tmp/{{ upstream.name }}.gzip | docker load
   - task: run_tasks
     tasks: << postload >>
   - task: generate_file
-    template: docker-compose.yml.erb
+    template: docker/docker-compose.yml.erb
     target: "{{ docker_compose_file }}"
   - description: Uploading docker-compose.yml
     task: upload

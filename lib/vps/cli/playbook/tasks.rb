@@ -44,45 +44,28 @@ module VPS
         end
 
         def read_config(state, options)
-          from, key = File.expand_path(state.resolve(options[:from])).split(":")
-          YAML.load_file(from)[key] if File.exists?(from)
+          VPS.read_config(state[:host], state.resolve(options[:key]))
         end
 
-        def obtain_config(state, options)
-          from = File.expand_path(state.resolve(options[:from]))
-          config = (File.exists?(from) ? YAML.load_file(from) : {}).with_indifferent_access
-          changed = false
+        def write_config(state, options)
+          config = {}
 
           options[:config].each do |key, spec|
-            if config.has_key?(key)
-              set(state, key, config[key])
+            spec = spec.with_indifferent_access if spec.is_a?(Hash)
+
+            if spec.is_a?(Hash) && spec[:type] && spec[:question]
+              spec[:task] = spec.delete(:type)
+              spec[:as] = key
+              run_task(state, spec)
             else
-              spec = spec.with_indifferent_access if spec.is_a?(Hash)
-
-              if spec.is_a?(Hash) && spec[:type] && spec[:question]
-                spec[:task] = spec.delete(:type)
-                spec[:as] = key
-                run_task(state, spec)
-              else
-                value = state.resolve(spec)
-                set(state, key, value)
-              end
-
-              config[key] = state[key]
-              changed = true
+              value = state.resolve(spec)
+              set(state, key, value)
             end
+
+            config[key] = state[key]
           end
 
-          if changed
-            config = JSON.parse(config.to_json)
-            unless state.dry_run?
-              FileUtils.mkdir_p(File.dirname(from))
-              File.write(from, config.to_yaml)
-            end
-            puts "   written #{from}".gray
-          else
-            puts "   found #{from}".gray
-          end
+          VPS.write_config(state[:host], config)
         end
 
         def loop(state, options)
@@ -144,7 +127,7 @@ module VPS
         end
 
         def generate_file(state, options)
-          erb = File.read("#{state[:pwd]}/#{state.resolve(options[:template])}")
+          erb = VPS.read_template(state.resolve(options[:template]))
           template = Erubis::Eruby.new(erb)
           target = File.expand_path(state.resolve(options[:target]))
 

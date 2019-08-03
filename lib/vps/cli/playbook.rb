@@ -7,26 +7,25 @@ module VPS
 
       class NotFoundError < VPS::CLI::Error; end
 
-      DIRECTORY = File.expand_path(File.join(__FILE__, "../../../../playbooks"))
-      EXTNAME = ".yml"
+      YML = ".yml"
 
       attr_reader :command
 
       def self.all
-        Dir["#{DIRECTORY}/*#{EXTNAME}"].collect do |playbook|
-          command = File.basename(playbook, EXTNAME)
+        Dir["#{VPS::PLAYBOOKS}/*#{YML}"].collect do |playbook|
+          command = File.basename(playbook, YML)
           new(playbook, command)
         end
       end
 
       def self.run(playbook, state)
-        playbook = File.expand_path(playbook, DIRECTORY)
+        playbook = File.expand_path(playbook, VPS::PLAYBOOKS)
 
         if File.directory?(playbook)
           playbook += "/#{state.server_version}"
         end
-        unless File.extname(playbook) == EXTNAME
-          playbook += EXTNAME
+        unless File.extname(playbook) == YML
+          playbook += YML
         end
 
         new(playbook).run(state)
@@ -38,8 +37,6 @@ module VPS
         end
 
         @playbook = {"constants" => {}}.merge(YAML.load_file(playbook))
-        @playbook["constants"]["pwd"] = File.dirname(playbook)
-
         unless (playbooks = Dir[playbook.gsub(/\.\w+$/, "/*.yml")].collect{|yml| File.basename(yml, ".yml")}).empty?
           @playbook["constants"]["playbooks"] = playbooks
         end

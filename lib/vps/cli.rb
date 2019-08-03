@@ -33,7 +33,7 @@ module VPS
 
     desc "edit HOST", "Edit the VPS configuration file"
     def edit(host)
-      `open ~/.vps/#{host}/config.yml`
+      `open #{VPS.config_path(host)}`
     end
 
     desc "-v, [--version]", "Show VPS version number"

@@ -93,7 +93,11 @@ module VPS
                   ($1 == "{") ? value.inspect : value
                 end
               end
-            value.include?("dir:") ? File.basename(value) : value
+            if value.include?("config:")
+              VPS.config_path(self[:host], value.gsub("config:", ""))
+            else
+              value
+            end
           else
             arg
           end
