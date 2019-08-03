@@ -24,5 +24,11 @@ tasks:
         type: input
         question: Enter release path on the server
         default: ~/app
+      preload:
+        - task: read_config
+          key: preload
+      postload:
+        - task: read_config
+          key: postload
   - task: playbook
     playbook: deploy/{{ tool }}
