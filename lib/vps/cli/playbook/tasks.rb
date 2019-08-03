@@ -65,7 +65,9 @@ module VPS
             config[key] = state[key]
           end
 
-          VPS.write_config(state[:host], config)
+          unless state.dry_run?
+            VPS.write_config(state[:host], config)
+          end
         end
 
         def loop(state, options)
