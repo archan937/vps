@@ -7,6 +7,10 @@ module VPS
   PLAYBOOKS = "#{ROOT}/playbooks"
   TEMPLATES = "#{ROOT}/templates"
 
+  def read_template(path)
+    File.read("#{TEMPLATES}/#{path}")
+  end
+
   def read_config(host, key = nil)
     if File.exists?(path = config_path(host))
       config = YAML.load_file(path)
@@ -41,10 +45,6 @@ module VPS
 
   def config_path(host, path = "config.yml")
     File.expand_path("~/.vps/#{host}/#{path}")
-  end
-
-  def template(path)
-    File.read("#{TEMPLATES}/#{path}")
   end
 
 private
