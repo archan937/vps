@@ -8,6 +8,14 @@ arguments:
   - tool
 tasks:
   - task: ensure
+    argument: user
+    fallbacks:
+      - task: read_config
+        key: user
+      - description: Obtaining remote user
+        task: remote_execute
+        command: whoami
+  - task: ensure
     argument: tool
     fallbacks:
       - task: read_config
