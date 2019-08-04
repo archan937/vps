@@ -16,13 +16,19 @@ tasks:
         task: select
         question: Which deployment tool do you want to use?
         options: << playbooks >>
+  - task: ensure
+    argument: release_path
+    fallbacks:
+      - task: read_config
+        key: release_path
+      - description: Specify which directory to deploy to
+        task: input
+        question: Enter release path on the server
+        default: ~/app
   - task: write_config
     config:
       user: << user >>
       tool: << tool >>
-      release_path:
-        type: input
-        question: Enter release path on the server
-        default: ~/app
+      release_path: << release_path >>
   - task: playbook
     playbook: deploy/{{ tool }}
