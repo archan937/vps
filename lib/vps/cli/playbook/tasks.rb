@@ -61,16 +61,11 @@ module VPS
           options[:config].each do |key, spec|
             spec = spec.with_indifferent_access if spec.is_a?(Hash)
 
-            if spec.is_a?(Hash) && spec[:type] && spec[:question]
-              spec[:task] = spec.delete(:type)
-              spec[:as] = key
-              run_task(state, spec)
+            if spec.is_a?(Hash) && spec[:task]
+              config[key] = run_task(state, spec)
             else
-              value = state.resolve(spec)
-              set(state, key, value)
+              config[key] = state.resolve(spec)
             end
-
-            config[key] = state[key]
           end
 
           unless state.dry_run?
