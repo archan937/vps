@@ -4,14 +4,18 @@ source:
 constants:
   config_path: ~/.vps/{{ host }}
   docker_compose_file: "{{ config_path }}/docker-compose.yml"
+  nginx_conf_file: "{{ config_path }}/data/nginx/app.conf"
 tasks:
-  - description: Building docker images
-    task: loop
+  - task: loop
     through: << upstreams >>
     as: upstream
     run:
-      - task: execute
-        command: docker build --no-cache -t {{ upstream.name }} {{ upstream.path }}
+      - task: generate_file
+        template: docker/upstream/Dockerfile.{{ upstream.type }}.erb
+        target: "{{ config_path }}/{{ upstream.name }}/Dockerfile"
+      - description: Building '{{ upstream.name }}' image
+        task: execute
+        command: docker build --no-cache -f {{ config_path }}/{{ upstream.name }}/Dockerfile -t {{ upstream.name }} {{ upstream.path }}
   - description: Saving docker images as .gzip file
     task: loop
     through: << upstreams >>
@@ -61,6 +65,13 @@ tasks:
     task: upload
     file: "{{ docker_compose_file }}"
     remote_path: "{{ release_path }}/docker-compose.yml"
+  - task: generate_file
+    template: docker/data/nginx/app.conf.erb
+    target: "{{ nginx_conf_file }}"
+  - description: Uploading Nginx config
+    task: upload
+    file: "{{ nginx_conf_file }}"
+    remote_path: "{{ release_path }}/data/nginx/app.conf"
   - description: Starting containers
     task: remote_execute
     command: cd {{ release_path }} && docker-compose up -d

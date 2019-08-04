@@ -7,6 +7,10 @@ module VPS
   PLAYBOOKS = "#{ROOT}/playbooks"
   TEMPLATES = "#{ROOT}/templates"
 
+  def config_path(host, path = "config.yml")
+    File.expand_path("~/.vps/#{host}/#{path}")
+  end
+
   def read_template(path)
     File.read("#{TEMPLATES}/#{path}")
   end
@@ -19,8 +23,8 @@ module VPS
       with_indifferent_access({
         :user => nil,
         :tool => nil,
-        :services => [],
         :upstreams => [],
+        :services => [],
         :release_path => nil,
         :preload => nil,
         :postload => nil

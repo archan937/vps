@@ -1,0 +1,28 @@
+<%- upstreams.each do |upstream| %>
+
+upstream <%= upstream[:name] %> {
+  server <%= upstream[:name] %>:<%= upstream[:port] %>;
+}
+
+server {
+  listen 80;
+  server_name <%=
+    upstream[:domains].collect do |domain|
+      domain.gsub("http://", "")
+    end.sort.join(" ")
+  %>;
+  server_tokens off;
+
+  <% proxy_pass = "http://#{ upstream[:name] }" %>
+  <%- if upstream[:nginx] %>
+<%= upstream[:nginx].gsub("PROXY_PASS", proxy_pass).indent(2) %>
+
+  <%- end %>
+  location / {
+    proxy_pass        <%= proxy_pass %>;
+    proxy_set_header  Host $http_host;
+    proxy_set_header  X-Real-IP $remote_addr;
+    proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}
+<%- end %>

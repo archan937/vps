@@ -17,6 +17,12 @@ class String
     end
   end
 
+  def indent(n, string = " ")
+    split("\n").collect do |line|
+      line.empty? ? line : "#{string * n}#{line}"
+    end.join("\n")
+  end
+
 private
 
   def colorize(color)

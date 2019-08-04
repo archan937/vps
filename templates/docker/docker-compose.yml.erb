@@ -2,16 +2,35 @@ version: "3"
 
 services:
 
-  <%- services.each do |service| %>
-  <%= service.name %>:
-    image: <%= service.image %>
-    container_name: <%= service.name %>
-
-  <%- end %>
+  nginx:
+    image: nginx:1.15-alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+    depends_on:
+      <%- upstreams.each do |upstream| %>
+      - <%= upstream.name %>
+      <%- end %>
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
   <%- upstreams.each do |upstream| %>
+
   <%= upstream.name %>:
     image: <%= upstream.name %>
     container_name: <%= upstream.name %>
-
+    restart: always
+    <%- if upstream[:compose] %>
+<%= upstream[:compose].indent(4) %>
+    <%- end %>
   <%- end %>
-volumes:
+  <%- services.each do |service| %>
+
+  <%= service.name %>:
+    image: <%= service.image %>
+    container_name: <%= service.name %>
+    restart: always
+    <%- if service[:compose] %>
+<%= service[:compose].indent(4) %>
+    <%- end %>
+  <%- end %>
