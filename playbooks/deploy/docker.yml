@@ -2,7 +2,8 @@
 source:
   - http://dimafeng.com/2015/10/17/docker-distribution/
 constants:
-  docker_compose_file: "config:docker-compose.yml"
+  config_path: ~/.vps/{{ host }}
+  docker_compose_file: "{{ config_path }}/docker-compose.yml"
 tasks:
   - description: Building docker images
     task: loop

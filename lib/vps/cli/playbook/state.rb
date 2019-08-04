@@ -84,19 +84,13 @@ module VPS
 
         def resolve(arg)
           if arg.is_a?(String)
-            value =
-              if arg.match(/^<<\s*(.*?)\s*>>$/)
-                self[$1]
-              else
-                arg.gsub(/\{\{(\{?)\s*(.*?)\s*\}\}\}?/) do
-                  value = self[$2]
-                  ($1 == "{") ? value.inspect : value
-                end
-              end
-            if value.to_s.include?("config:")
-              VPS.config_path(self[:host], value.gsub("config:", ""))
+            if arg.match(/^<<\s*(.*?)\s*>>$/)
+              self[$1]
             else
-              value
+              arg.gsub(/\{\{(\{?)\s*(.*?)\s*\}\}\}?/) do
+                value = self[$2]
+                ($1 == "{") ? value.inspect : value
+              end
             end
           else
             arg

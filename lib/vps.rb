@@ -46,10 +46,6 @@ module VPS
     end
   end
 
-  def config_path(host, path = "config.yml")
-    File.expand_path("~/.vps/#{host}/#{path}")
-  end
-
 private
 
   def with_indifferent_access(object)
