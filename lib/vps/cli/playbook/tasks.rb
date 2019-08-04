@@ -14,7 +14,7 @@ module VPS
         end
 
         def run(state)
-          @tasks.each do |task|
+          @tasks.collect do |task|
             case task
             when :continue # next
             when :abort
