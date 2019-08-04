@@ -12,6 +12,7 @@ tasks:
       postload:
         - task: read_config
           key: postload
+  - task: obtain_config
   - description: Building docker images
     task: loop
     through: << upstreams >>

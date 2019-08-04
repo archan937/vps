@@ -43,6 +43,14 @@ module VPS
           end
         end
 
+        def obtain_config(state, options)
+          VPS.read_config(state[:host]).tap do |config|
+            config.each do |key, value|
+              set(state, key, value)
+            end
+          end
+        end
+
         def read_config(state, options)
           VPS.read_config(state[:host], state.resolve(options[:key]))
         end
