@@ -7,11 +7,11 @@ tasks:
   - task: write_config
     config:
       preload:
-        - task: read_config
-          key: preload
+        task: read_config
+        key: preload
       postload:
-        - task: read_config
-          key: postload
+        task: read_config
+        key: postload
   - task: obtain_config
   - description: Building docker images
     task: loop
