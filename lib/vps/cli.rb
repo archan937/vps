@@ -37,20 +37,21 @@ module VPS
     end
 
     class Upstream < Thor
-      desc "add HOST PATH", "Add upstream to host configuration (option: --name)"
-      method_option :name
-      def add(host, path)
+      desc "add HOST[:UPSTREAM] PATH", "Add upstream to host configuration (:upstream is optional)"
+      def add(host_and_optional_upstream, path)
+        host, name = host_and_optional_upstream.split(":")
         config = VPS.read_config(host)
         config[:upstreams].push({
-          :name => options[:name] || File.basename(path),
+          :name => name || File.basename(path),
           :path => path,
           :domains => []
         })
         VPS.write_config(host, config)
       end
 
-      desc "remove HOST UPSTREAM", "Remove upstream from host configuration"
-      def remove(host, name)
+      desc "remove HOST:UPSTREAM", "Remove upstream from host configuration"
+      def remove(host_and_upstream)
+        host, name = host_and_upstream.split(":")
         config = VPS.read_config(host)
         config[:upstreams].reject!{|upstream| upstream[:name] == name}
         VPS.write_config(host, config)
@@ -93,7 +94,7 @@ module VPS
         VPS.write_config(host, config)
       end
 
-      desc "list HOST[:UPSTREAM]", "List domains of host (:upstream optional)"
+      desc "list HOST[:UPSTREAM]", "List domains of host (:upstream is optional)"
       def list(host_and_optional_upstream)
         host, name = host_and_optional_upstream.split(":")
         config = VPS.read_config(host)
