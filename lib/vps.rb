@@ -19,7 +19,10 @@ module VPS
       with_indifferent_access({
         :user => nil,
         :tool => nil,
-        :upstreams => []
+        :upstreams => [],
+        :release_path => nil,
+        :preload => nil,
+        :postload => nil
       })
     end
   end

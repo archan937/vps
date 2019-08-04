@@ -4,15 +4,6 @@ source:
 constants:
   docker_compose_file: "config:docker-compose.yml"
 tasks:
-  - task: write_config
-    config:
-      preload:
-        task: read_config
-        key: preload
-      postload:
-        task: read_config
-        key: postload
-  - task: obtain_config
   - description: Building docker images
     task: loop
     through: << upstreams >>

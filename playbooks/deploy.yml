@@ -38,5 +38,6 @@ tasks:
       user: << user >>
       tool: << tool >>
       release_path: << release_path >>
+  - task: obtain_config
   - task: playbook
     playbook: deploy/{{ tool }}
