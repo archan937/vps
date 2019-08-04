@@ -93,7 +93,7 @@ module VPS
                   ($1 == "{") ? value.inspect : value
                 end
               end
-            if value.include?("config:")
+            if value.to_s.include?("config:")
               VPS.config_path(self[:host], value.gsub("config:", ""))
             else
               value
