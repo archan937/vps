@@ -29,7 +29,7 @@ module VPS
     changed = false
 
     changes.each do |key, value|
-      if config[key] != value
+      if !config.include?(key) || (config[key] != value)
         config[key] = value
         changed = true
       end
