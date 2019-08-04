@@ -51,8 +51,8 @@ module VPS
           default
         end
 
-        def [](key)
-          key.to_s.split(".").inject(self) do |hash, key|
+        def [](path)
+          path.to_s.split(".").inject(self) do |hash, key|
             (hash || {}).fetch(key)
           end
         end

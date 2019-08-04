@@ -134,13 +134,19 @@ module VPS
         def generate_file(state, options)
           erb = VPS.read_template(state.resolve(options[:template]))
           template = Erubis::Eruby.new(erb)
-          target = File.expand_path(state.resolve(options[:target]))
+          content = template.result(state.to_binding)
 
           unless state.dry_run?
-            File.open(target, "w") do |file|
-              file.write(template.result(state.to_binding))
+            if target = state.resolve(options[:target])
+              target = File.expand_path(target)
+              FileUtils.mkdir_p(File.dirname(target))
+              File.open(target, "w") do |file|
+                file.write(content)
+              end
             end
           end
+
+          content
         end
 
         def execute(state, options)
