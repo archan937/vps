@@ -65,7 +65,7 @@ module VPS
           case object
           when State
             keys = stack.collect(&:keys).flatten.uniq
-            keys.inject({}) do |hash, key|
+            keys.inject({state: object}) do |hash, key|
               hash[key] = to_binding(self[key])
               hash
             end
