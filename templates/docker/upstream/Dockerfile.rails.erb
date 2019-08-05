@@ -1,0 +1,15 @@
+FROM ruby:<%= upstream.tool_version %>-alpine
+
+RUN apk update \
+&& apk --no-cache --update add \
+  build-base nodejs tzdata \
+  mysql-dev mysql-client --no-install-recommends \
+  postgresql-dev postgresql-client \
+  libxslt-dev libxml2-dev
+
+WORKDIR /opt/app
+COPY . .
+
+ENV RAILS_ENV=production
+RUN bundle install --without development test
+CMD ["rails", "server", "-b", "0.0.0.0"]
