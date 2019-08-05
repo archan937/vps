@@ -1,0 +1,13 @@
+FROM elixir:<%= upstream.tool_version %>-alpine
+
+RUN apk update \
+&& apk --no-cache --update add alpine-sdk \
+&& mix local.rebar --force \
+&& mix local.hex --force
+
+WORKDIR /opt/app
+COPY . .
+
+ENV MIX_ENV=prod
+RUN mix do deps.get --only prod, deps.compile
+CMD ["sh", "-c", "mix phx.server"]
