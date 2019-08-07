@@ -1,6 +1,6 @@
 # VPS
 
-Manage your Virtual Private Server using a user-friendly CLI
+Practically zero-config deployments of Plug, Phoenix, Rack and Rails apps on a clean Ubuntu server done with Docker
 
 **NOTE: This is an experimental project**
 
@@ -33,9 +33,11 @@ VPS is a command-line-interface, you can print help instructions:
       vps upstream list HOST                  # List upstreams of host configuration
       vps upstream remove HOST:UPSTREAM       # Remove upstream from host configuration
 
-### Deploying an Elixir Plug application to a totally clean Ubuntu server
+### Deploying a Plug / Phoenix / Rack / Rails application to a totally clean installed Ubuntu server
 
-Let's say the SSH host is called `silver_surfer` and that the application is located at `~/Sources/spider_web`. Just execute the following commands:
+Let's say the SSH host is called `silver_surfer` and that the application is located at `~/Sources/spider_web`.
+
+Just execute the following commands:
 
     $ vps init silver_surfer
     $ vps install silver_surfer docker
@@ -43,7 +45,7 @@ Let's say the SSH host is called `silver_surfer` and that the application is loc
     $ vps domain add silver_surfer:spider_web http://spider.web
     $ vps deploy silver_surfer
 
-Et voilà. Your awesome Elixir Plug website is online, powered by Docker and Nginx! :D
+Et voilà. Your awesome website is online, powered by Docker and Nginx! :D
 
 ## Contact me
 
