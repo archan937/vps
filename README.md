@@ -1,8 +1,16 @@
 # VPS
 
-Practically zero-config deployments of Plug, Phoenix, Rack and Rails apps on a clean Ubuntu server done with Docker
+Zero-config deployments of Plug, Phoenix, Rack and Rails apps on a clean Ubuntu server using Docker and Let's Encrypt
 
 **NOTE: This is an experimental project**
+
+## Introduction
+
+Despite of having my fair share of experience in software development, hosting web applications has never really been my strongest skill set. So as a real programmer, I want to use a command line interface for easy deployments of my web applications (using HTTPS or not).
+
+Important for me is not want to be locked onto a specific hosting provider and also, I want the server to be dispensable because "I know that my CLI has got my back".
+
+So enter the Ruby gem `VPS` which makes it able to deploy my web application on a totally clean Ubuntu server by roughly just executing five simple commands :muscle:
 
 ## Installation
 
@@ -46,6 +54,33 @@ Just execute the following commands:
     $ vps deploy silver_surfer
 
 Et voilà. Your awesome website is online, powered by Docker and Nginx! :D
+
+### Want to use a HTTPS domain?
+
+No problem, just specify so and make sure you also pass a valid email address (which is recommended). During deployment `certbot` will be added to the docker compose config and the SSL certificates will be created using [`init-letsencrypt.sh`](https://github.com/archan937/vps/blob/master/templates/docker/init-letsencrypt.sh.erb).
+
+    $ vps init silver_surfer
+    $ vps install silver_surfer docker
+    $ vps upstream add silver_surfer ~/Sources/spider_web
+    $ vps domain add silver_surfer:spider_web https://spider.web your.valid@email-address.com
+    $ vps deploy silver_surfer
+
+Cool, huh? :D
+
+## Credits
+
+Thanks Philipp Medien (@pentacent_hq) for writing about using Nginx and Let's Encrypt with Docker:
+
+https://medium.com/@pentacent / [the-blog-post](https://medium.com/@pentacent/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71)
+
+Thanks Dmitry Fedosov (@dimafeng) for writing about scripting Docker based deployments:
+
+http://dimafeng.com / [the-blog-post](http://dimafeng.com/2015/10/17/docker-distribution)
+
+## TODO
+
+* Provide easy setup of services like MySQL and PostgreSQL databases, Redis, Memcached, etc.
+* Add documentation about adding docker-compose and Nginx related configs plus adding pre- and postload tasks
 
 ## Contact me
 

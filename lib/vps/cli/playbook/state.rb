@@ -52,8 +52,15 @@ module VPS
         end
 
         def [](path)
+          to_domain = !!(path = path.dup).gsub!("domain:", "") if path.is_a?(String)
           path.to_s.split(".").inject(self) do |hash, key|
             (hash || {}).fetch(key)
+          end.tap do |value|
+            if to_domain && value
+              if (domain = value[:domains].first)
+                return domain.gsub(/https?:\/\//, "")
+              end
+            end
           end
         end
 

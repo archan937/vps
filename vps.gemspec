@@ -4,8 +4,8 @@ require File.expand_path("../lib/vps/version", __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Paul Engel"]
   gem.email         = ["pm_engel@icloud.com"]
-  gem.summary       = %q{Manage your Virtual Private Server using a user-friendly CLI}
-  gem.description   = %q{Manage your Virtual Private Server using a user-friendly CLI}
+  gem.summary       = %q{Zero-config deployments of Plug, Phoenix, Rack and Rails apps on a clean Ubuntu server using Docker and Let's Encrypt}
+  gem.description   = %q{Zero-config deployments of Plug, Phoenix, Rack and Rails apps on a clean Ubuntu server using Docker and Let's Encrypt}
   gem.homepage      = "https://github.com/archan937/vps"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }

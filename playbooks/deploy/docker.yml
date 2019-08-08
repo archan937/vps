@@ -56,8 +56,6 @@ tasks:
     run:
       - task: remote_execute
         command: gunzip < /tmp/{{ upstream.name }}.gzip | docker load
-  - task: run_tasks
-    tasks: << postload >>
   - task: generate_file
     template: docker/docker-compose.yml.erb
     target: "{{ docker_compose_file }}"
@@ -72,6 +70,24 @@ tasks:
     task: upload
     file: "{{ nginx_conf_file }}"
     remote_path: "{{ release_path }}/data/nginx/app.conf"
+  - task: loop
+    through: << upstreams >>
+    as: upstream
+    run:
+      - task: generate_file
+        template: docker/init-letsencrypt.sh.erb
+        target: "{{ config_path }}/{{ upstream.name }}/init-letsencrypt.sh"
+      - description: Uploading Let’s Encrypt script
+        task: upload
+        file: "{{ config_path }}/{{ upstream.name }}/init-letsencrypt.sh"
+        remote_path: "{{ release_path }}/init-letsencrypt/{{ upstream.name }}.sh"
+      - description: Install SSL certificates (if required)
+        task: remote_execute
+        command:
+          - chmod +x {{ release_path }}/init-letsencrypt/{{ upstream.name }}.sh
+          - cd {{ release_path }} && if [ ! -d "data/certbot/conf/live/{{ domain:upstream }}" ]; then yes Y | sudo ./init-letsencrypt/{{ upstream.name }}.sh; fi
+  - task: run_tasks
+    tasks: << postload >>
   - description: Starting containers
     task: remote_execute
     command: cd {{ release_path }} && docker-compose up -d
