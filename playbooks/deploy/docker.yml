@@ -90,7 +90,7 @@ tasks:
     tasks: << postload >>
   - description: Starting containers
     task: remote_execute
-    command: cd {{ release_path }} && docker-compose up -d
+    command: cd {{ release_path }} && docker-compose up {{ up }} -d
   - description: Checking running docker images
     task: remote_execute
     command: docker ps

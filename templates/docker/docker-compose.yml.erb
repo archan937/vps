@@ -35,7 +35,6 @@ services:
 
   <%= upstream.name %>:
     image: <%= upstream.name %>
-    container_name: <%= upstream.name %>
     restart: always
     <%- unless upstream[:compose].to_s.include?("ports:") %>
     ports:
@@ -49,7 +48,6 @@ services:
 
   <%= service.name %>:
     image: <%= service.image %>
-    container_name: <%= service.name %>
     restart: always
     <%- if service[:compose] %>
 <%= service[:compose].indent(4) %>
