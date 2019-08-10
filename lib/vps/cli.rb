@@ -33,7 +33,7 @@ module VPS
 
     desc "edit HOST", "Edit the VPS configuration file"
     def edit(host)
-      `open #{VPS.config_path(host)}`
+      `#{ENV["EDITOR"]} #{VPS.config_path(host, "")}`
     end
 
     class Upstream < Thor
