@@ -24,22 +24,27 @@ VPS is a command-line-interface, you can print help instructions:
 
     $ vps help
     Commands:
-      vps -v, [--version]                     # Show VPS version number
-      vps deploy HOST [TOOL]                  # Deploy web application to the server
-      vps domain                              # Manage upstream domains
-      vps domain add HOST:UPSTREAM DOMAIN     # Add domain to host upstream
-      vps domain help [COMMAND]               # Describe subcommands or one specific subcommand
-      vps domain list HOST[:UPSTREAM]         # List domains of host (:upstream is optional)
-      vps domain remove HOST:UPSTREAM DOMAIN  # Remove domain from host upstream
-      vps edit HOST                           # Edit the VPS configuration file
-      vps help [COMMAND]                      # Describe available commands or one specific command
-      vps init HOST                           # Execute an initial server setup
-      vps install HOST TOOL                   # Install software on the server
-      vps upstream                            # Manage host upstreams
-      vps upstream add HOST[:UPSTREAM] PATH   # Add upstream to host configuration (:upstream is optional)
-      vps upstream help [COMMAND]             # Describe subcommands or one specific subcommand
-      vps upstream list HOST                  # List upstreams of host configuration
-      vps upstream remove HOST:UPSTREAM       # Remove upstream from host configuration
+      vps -v, [--version]                          # Show VPS version number
+      vps deploy HOST [TOOL]                       # Deploy web application to the server
+      vps domain                                   # Manage upstream domains
+      vps domain add HOST:UPSTREAM DOMAIN [EMAIL]  # Add domain to host upstream (email recommended for https)
+      vps domain help [COMMAND]                    # Describe subcommands or one specific subcommand
+      vps domain list HOST[:UPSTREAM]              # List domains of host
+      vps domain remove HOST[:UPSTREAM] [DOMAIN]   # Remove domain from host upstream
+      vps edit [HOST]                              # Edit the VPS configuration(s)
+      vps help [COMMAND]                           # Describe available commands or one specific command
+      vps init HOST                                # Execute an initial server setup
+      vps install HOST [TOOL]                      # Install software on the server
+      vps service                                  # Manage host services
+      vps service add HOST [SERVICE]               # Add service to host configuration
+      vps service help [COMMAND]                   # Describe subcommands or one specific subcommand
+      vps service list HOST                        # List services of host configuration
+      vps service remove HOST [SERVICE]            # Remove service from host configuration
+      vps upstream                                 # Manage host upstreams
+      vps upstream add HOST[:UPSTREAM] PATH        # Add upstream to host configuration
+      vps upstream help [COMMAND]                  # Describe subcommands or one specific subcommand
+      vps upstream list HOST                       # List upstreams of host configuration
+      vps upstream remove HOST[:UPSTREAM]          # Remove upstream from host configuration
 
 ### Deploying a Plug / Phoenix / Rack / Rails application to a totally clean installed Ubuntu server
 
@@ -67,6 +72,10 @@ No problem, just specify so and make sure you also pass a valid email address (w
 
 Cool, huh? :D
 
+### Want to add a (commonly used) service?
+
+Easy. Just run `vps service add <yourhost>` (e.g. `vps service add silver_surfer`) and follow the instructions.
+
 ## Credits
 
 Thanks Philipp Medien (@pentacent_hq) for writing about using Nginx and Let's Encrypt with Docker:
@@ -79,7 +88,6 @@ http://dimafeng.com / [the-blog-post](http://dimafeng.com/2015/10/17/docker-dist
 
 ## TODO
 
-* Provide easy setup of services like MySQL and PostgreSQL databases, Redis, Memcached, etc.
 * Add documentation about adding docker-compose and Nginx related configs plus adding pre- and postload tasks
 
 ## Contact me

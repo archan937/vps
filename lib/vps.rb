@@ -50,7 +50,8 @@ module VPS
     changed = false
 
     %w(services upstreams volumes).each do |key|
-      changes[key] = nil if changes[key].empty?
+      value = changes[key]
+      changes[key] = nil if value && value.empty?
     end
 
     changes.each do |key, value|

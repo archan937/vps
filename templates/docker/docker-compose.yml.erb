@@ -1,5 +1,10 @@
 version: "3"
-<% https = upstreams.any?{|upstream| upstream[:domains].any?{|domain| domain.include?("https://")}} %>
+<%
+https = upstreams.any?{|upstream| upstream[:domains].any?{|domain| domain.include?("https://")}}
+to_yaml = proc do |struct|
+  struct.to_h.inject({}){|h, (k, v)| h[k.to_s] = v; h}.to_yaml
+end
+%>
 services:
 
   nginx:
@@ -11,7 +16,7 @@ services:
       <%- if https %>
       - 443:443
       <%- end %>
-      depends_on:
+    depends_on:
       <%- upstreams.each do |upstream| %>
       - <%= upstream.name %>
       <%- end %>
@@ -41,14 +46,11 @@ services:
       - <%= upstream.port %>
     <%- end %>
     <%- if upstream[:compose] %>
-<%= upstream[:compose].to_yaml(/^.*?\n/, "").indent(4) %>
+<%= to_yaml.(upstream[:compose]).sub(/^.*?\n/, "").indent(4) %>
     <%- end %>
   <%- end %>
-  <%- services.each do |service, compose| %>
+  <%- services.each do |service, config| %>
 
-  <%= service.name %>:
-    image: <%= service %>
-    <%- if service[:compose] %>
-<%= service[:compose].to_yaml(/^.*?\n/, "").indent(4) %>
-    <%- end %>
+  <%= service %>:
+<%= to_yaml.(config).sub(/^.*?\n/, "").indent(4) %>
   <%- end %>

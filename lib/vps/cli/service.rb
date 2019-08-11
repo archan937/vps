@@ -26,7 +26,7 @@ module VPS
         end
       end
 
-      desc "remove HOST SERVICE", "Remove service from host configuration"
+      desc "remove HOST [SERVICE]", "Remove service from host configuration"
       def remove(host, service = nil)
         config = VPS.read_config(host)
 
