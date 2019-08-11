@@ -36,7 +36,7 @@ services:
   <%= upstream.name %>:
     image: <%= upstream.name %>
     restart: always
-    <%- unless upstream[:compose].inspect.match?(/\bports\b/) %>
+    <%- unless upstream[:compose].inspect.match(/\bports\b/) %>
     ports:
       - <%= upstream.port %>
     <%- end %>
