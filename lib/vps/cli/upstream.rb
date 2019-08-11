@@ -2,11 +2,12 @@ module VPS
   class CLI < Thor
     class Upstream < Thor
 
-      desc "add HOST[:UPSTREAM] PATH", "Add upstream to host configuration (:upstream is optional)"
+      desc "add HOST[:UPSTREAM] PATH", "Add upstream to host configuration"
       def add(host_and_optional_upstream, path)
         host, name = host_and_optional_upstream.split(":")
         config = VPS.read_config(host)
         path = File.expand_path(path)
+
         unless config[:upstreams].any?{|upstream| upstream[:name] == name}
           type, tool_version, port = derive_upstream(path)
           config[:upstreams].push({
@@ -17,8 +18,8 @@ module VPS
             :port => port,
             :domains => []
           })
+          VPS.write_config(host, config)
         end
-        VPS.write_config(host, config)
       end
 
       desc "remove HOST:UPSTREAM", "Remove upstream from host configuration"
