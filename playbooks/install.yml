@@ -1,9 +1,18 @@
 ---
 description:
   Install software on the server
+usage:
+  install HOST [TOOL]
 arguments:
   - host
   - tool
 tasks:
+  - task: ensure
+    argument: tool
+    fallbacks:
+      - description: Choose which deploy tool to install
+        task: select
+        question: Which deployment tool do you want to install?
+        options: << playbooks >>
   - task: playbook
     playbook: install/{{ tool }}

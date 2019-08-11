@@ -37,7 +37,7 @@ module VPS
         end
 
         @playbook = {"constants" => {}}.merge(YAML.load_file(playbook))
-        unless (playbooks = Dir[playbook.gsub(/\.\w+$/, "/*.yml")].collect{|yml| File.basename(yml, ".yml")}).empty?
+        unless (playbooks = Dir[playbook.gsub(/\.\w+$/, "/*")].collect{|yml| File.basename(yml, ".yml")}).empty?
           @playbook["constants"]["playbooks"] = playbooks
         end
 
