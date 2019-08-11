@@ -75,7 +75,7 @@ tasks:
     as: upstream
     run:
       - task: generate_file
-        template: docker/init-letsencrypt.sh.erb
+        template: docker/upstream/init-letsencrypt.sh.erb
         target: "{{ config_path }}/{{ upstream.name }}/init-letsencrypt.sh"
       - description: Uploading Let’s Encrypt script
         task: upload
