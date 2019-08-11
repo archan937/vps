@@ -24,7 +24,7 @@ module VPS
         :user => nil,
         :tool => nil,
         :release_path => nil,
-        :services => [],
+        :services => {},
         :upstreams => [],
         :volumes => [],
         :preload => nil,
