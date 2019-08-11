@@ -16,7 +16,10 @@ module VPS
             :type => type,
             :tool_version => tool_version,
             :port => port,
-            :domains => []
+            :domains => [],
+            :email => nil,
+            :compose => nil,
+            :nginx => nil
           })
           VPS.write_config(host, config)
         end
