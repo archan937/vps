@@ -36,20 +36,19 @@ services:
   <%= upstream.name %>:
     image: <%= upstream.name %>
     restart: always
-    <%- unless upstream[:compose].to_s.include?("ports:") %>
+    <%- unless upstream[:compose].inspect.match?(/\bports\b/) %>
     ports:
       - <%= upstream.port %>
     <%- end %>
     <%- if upstream[:compose] %>
-<%= upstream[:compose].indent(4) %>
+<%= upstream[:compose].to_yaml(/^.*?\n/, "").indent(4) %>
     <%- end %>
   <%- end %>
-  <%- services.each do |service| %>
+  <%- services.each do |service, compose| %>
 
   <%= service.name %>:
-    image: <%= service.image %>
-    restart: always
+    image: <%= service %>
     <%- if service[:compose] %>
-<%= service[:compose].indent(4) %>
+<%= service[:compose].to_yaml(/^.*?\n/, "").indent(4) %>
     <%- end %>
   <%- end %>
