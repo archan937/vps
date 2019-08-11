@@ -22,20 +22,29 @@ module VPS
         end
       end
 
-      desc "remove HOST:UPSTREAM", "Remove upstream from host configuration"
-      def remove(host_and_upstream)
-        host, name = host_and_upstream.split(":")
+      desc "remove HOST[:UPSTREAM]", "Remove upstream from host configuration"
+      def remove(host_and_optional_upstream)
+        host, name = host_and_optional_upstream.split(":")
         config = VPS.read_config(host)
-        config[:upstreams].reject!{|upstream| upstream[:name] == name}
-        VPS.write_config(host, config)
+
+        unless name
+          list = config[:upstreams].collect{|upstream| upstream[:name]}.sort
+          name = list[Ask.list("Which upstream do you want to remove?", list)]
+        end
+
+        if config[:upstreams].reject!{|upstream| upstream[:name] == name}
+          VPS.write_config(host, config)
+        end
       end
 
       desc "list HOST", "List upstreams of host configuration"
       def list(host)
         config = VPS.read_config(host)
+
         upstreams = config[:upstreams].collect do |upstream|
           "* #{upstream[:name]} (#{upstream[:path].gsub(Dir.home, "~")})"
         end.sort
+
         puts upstreams
       end
 
