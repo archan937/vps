@@ -28,12 +28,27 @@ module VPS
 
       desc "remove HOST SERVICE", "Remove service from host configuration"
       def remove(host, service = nil)
-        #
+        config = VPS.read_config(host)
+
+        unless service
+          list = config[:services].keys.sort
+          service = list[Ask.list("Which service do you want to remove?", list)]
+        end
+
+        if config[:services].delete(service)
+          VPS.write_config(host, config)
+        end
       end
 
       desc "list HOST", "List services of host configuration"
       def list(host)
-        #
+        config = VPS.read_config(host)
+
+        services = config[:services].collect do |service, yml|
+          "* #{yml[:image]}"
+        end.sort
+
+        puts services
       end
 
     private
