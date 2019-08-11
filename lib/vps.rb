@@ -16,26 +16,42 @@ module VPS
   end
 
   def read_config(host, key = nil)
-    if File.exists?(path = config_path(host))
-      config = YAML.load_file(path)
-      with_indifferent_access(key ? config[key] : config)
-    elsif key.nil?
-      with_indifferent_access({
-        :user => nil,
-        :tool => nil,
-        :release_path => nil,
-        :services => {},
-        :upstreams => [],
-        :volumes => [],
-        :preload => nil,
-        :postload => nil
-      })
+    config =
+      if File.exists?(path = config_path(host))
+        YAML.load_file(path)
+      elsif key.nil?
+        {
+          :user => nil,
+          :tool => nil,
+          :release_path => nil,
+          :services => nil,
+          :upstreams => nil,
+          :volumes => nil,
+          :preload => nil,
+          :postload => nil
+        }
+      end
+
+    if config
+      config = with_indifferent_access(config)
+      if key
+        with_indifferent_access(config[key])
+      else
+        config[:services] ||= {}
+        config[:upstreams] ||= []
+        config[:volumes] ||= []
+        config
+      end
     end
   end
 
   def write_config(host, changes)
     config = read_config(host) || {}
     changed = false
+
+    %w(services upstreams volumes).each do |key|
+      changes[key] = nil if changes[key].empty?
+    end
 
     changes.each do |key, value|
       if !config.include?(key) || (config[key] != value)

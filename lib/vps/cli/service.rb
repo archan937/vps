@@ -9,18 +9,18 @@ module VPS
         config = VPS.read_config(host)
 
         unless service
-          list = services.keys.sort - (config[:services] || {}).keys
+          list = services.keys.sort - config[:services].keys
           service = list[Ask.list("Which service to you want to add?", list)]
         end
 
-        if !(config[:services] || {}).include?(service) && (yml = services[service])
+        if !config[:services].include?(service) && (yml = services[service])
           list = tags(yml[:image] || "library/#{service}")
           tag = list[Ask.list("Choose which tag to use", list)]
           image = "#{yml[:image] || service}:#{tag}"
 
           yml, volumes = finalize_config(yml)
-          (config[:services] ||= {})[service] = {:image => image}.merge(yml)
-          (config[:volumes] ||= []).concat(volumes).uniq!
+          config[:services][service] = {:image => image}.merge(yml)
+          config[:volumes].concat(volumes).uniq!
 
           VPS.write_config(host, config)
         end
