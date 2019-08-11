@@ -36,8 +36,8 @@ module VPS
       end
     end
 
-    desc "edit HOST", "Edit the VPS configuration file"
-    def edit(host)
+    desc "edit [HOST]", "Edit the VPS configuration(s)"
+    def edit(host = nil)
       `#{ENV["EDITOR"]} #{VPS.config_path(host, "")}`
     end
 
