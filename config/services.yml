@@ -1,0 +1,63 @@
+---
+memcached:
+  restart: on-failure
+mysql:
+  restart: on-failure
+  ports:
+    - 3306:3306
+  environment:
+    - MYSQL_DATABASE
+    - MYSQL_USER
+    - MYSQL_PASSWORD
+    - MYSQL_ROOT_PASSWORD
+  volumes:
+    - mysql:/var/lib/mysql
+mariadb:
+  restart: on-failure
+  ports:
+    - 3306:3306
+  environment:
+    - MYSQL_DATABASE
+    - MYSQL_USER
+    - MYSQL_PASSWORD
+    - MYSQL_ROOT_PASSWORD
+  volumes:
+    - mariadb:/var/lib/mysql
+postgres:
+  restart: on-failure
+  ports:
+    - 5432:5432
+  environment:
+    - POSTGRES_DB
+    - POSTGRES_USER
+    - POSTGRES_PASSWORD
+  volumes:
+    - postgres:/var/lib/postgres
+mongo:
+  restart: on-failure
+  environment:
+    - MONGO_INITDB_DATABASE
+    - MONGO_INITDB_ROOT_USERNAME
+    - MONGO_INITDB_ROOT_PASSWORD
+  volumes:
+    - mongo-db:/data/db
+    - mongo-config:/data/configdb
+redis:
+  restart: on-failure
+  volumes:
+    - redis:/data
+rabbitmq:
+  restart: on-failure
+  environment:
+    - RABBITMQ_ERLANG_COOKIE
+    - RABBITMQ_DEFAULT_USER
+    - RABBITMQ_DEFAULT_PASS
+  volumes:
+    - rabbitmq-etc:/etc/rabbitmq
+    - rabbitmq-lib:/var/lib/rabbitmq
+    - rabbitmq-logs:/var/log/rabbitmq
+clickhouse:
+  image: yandex/clickhouse-server
+  restart: on-failure
+  volumes:
+    - clickhouse:/var/lib/clickhouse

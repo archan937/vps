@@ -2,9 +2,11 @@ require "fileutils"
 require "json"
 require "yaml"
 require "ostruct"
+require "uri"
 require "thor"
 require "erubis"
 require "inquirer"
+require "net/http"
 require "net/ssh"
 
 require "active_support/dependencies/autoload"
@@ -12,11 +14,12 @@ require "active_support/core_ext/string/inflections"
 require "active_support/core_ext/hash"
 require "active_support/number_helper"
 
+require "vps"
 require "vps/core_ext/string"
+require "vps/cli/service"
 require "vps/cli/upstream"
 require "vps/cli/domain"
 require "vps/cli/playbook"
-require "vps"
 
 module VPS
   class CLI < Thor
@@ -39,6 +42,7 @@ module VPS
     end
 
     register(Upstream, "upstream", "upstream", "Manage host upstreams")
+    register(Service, "service", "service", "Manage host services")
     register(Domain, "domain", "domain", "Manage upstream domains")
 
     desc "-v, [--version]", "Show VPS version number"
