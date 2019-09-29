@@ -86,11 +86,11 @@ tasks:
         command:
           - chmod +x {{ release_path }}/init-letsencrypt/{{ upstream.name }}.sh
           - cd {{ release_path }} && if [ ! -d "data/certbot/conf/live/{{ domain:upstream }}" ]; then yes Y | sudo ./init-letsencrypt/{{ upstream.name }}.sh; fi
-  - task: run_tasks
-    tasks: << postload >>
   - description: Starting containers
     task: remote_execute
     command: cd {{ release_path }} && docker-compose up {{ up }} -d
   - description: Checking running docker images
     task: remote_execute
     command: docker ps
+  - task: run_tasks
+    tasks: << postload >>
