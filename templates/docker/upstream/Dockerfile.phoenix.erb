@@ -1,4 +1,4 @@
-FROM elixir:<%= upstream.tool_version %>-alpine
+FROM elixir:<%= upstream.elixir_version %>-alpine
 
 RUN apk update \
 && apk --no-cache --update add alpine-sdk \

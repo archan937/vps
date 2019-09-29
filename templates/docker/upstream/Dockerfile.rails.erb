@@ -1,4 +1,4 @@
-FROM ruby:<%= upstream.tool_version %>-alpine
+FROM ruby:<%= upstream.ruby_version %>-alpine
 
 RUN apk update \
 && apk --no-cache --update add \
@@ -11,5 +11,8 @@ WORKDIR /opt/app
 COPY . .
 
 ENV RAILS_ENV=production
+EXPOSE <%= upstream.port %>
+RUN gem install bundler -v <%= upstream.bundler_version %>
 RUN bundle install --without development test
-CMD ["rails", "server", "-b", "0.0.0.0"]
+CMD ["rm", "-f", "tmp/pids/server.pid"]
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]

@@ -1,4 +1,4 @@
-FROM ruby:<%= upstream.tool_version %>-alpine
+FROM ruby:<%= upstream.ruby_version %>-alpine
 
 RUN apk update \
 && apk --no-cache --update add \
@@ -11,5 +11,6 @@ WORKDIR /opt/app
 COPY . .
 
 ENV RACK_ENV=production
+RUN gem install bundler -v <%= upstream.bundler_version %>
 RUN bundle install --without development test
-CMD ["rackup", "config.ru", "-o", "0.0.0.0"]
+CMD ["bundle", "exec", "rackup", "config.ru", "-o", "0.0.0.0"]
