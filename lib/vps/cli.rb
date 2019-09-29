@@ -16,6 +16,7 @@ require "active_support/number_helper"
 
 require "vps"
 require "vps/core_ext/string"
+require "vps/core_ext/ostruct"
 require "vps/cli/service"
 require "vps/cli/upstream"
 require "vps/cli/domain"

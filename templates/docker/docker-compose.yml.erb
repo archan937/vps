@@ -1,10 +1,5 @@
 version: "3"
-<%
-https = upstreams.any?{|upstream| upstream[:domains].any?{|domain| domain.include?("https://")}}
-to_yaml = proc do |struct|
-  struct.to_h.inject({}){|h, (k, v)| h[k.to_s] = v; h}.to_yaml
-end
-%>
+<% https = upstreams.any?{|upstream| upstream[:domains].any?{|domain| domain.include?("https://")}} %>
 services:
 
   nginx:
@@ -36,6 +31,11 @@ services:
       - ./data/certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
   <%- end %>
+  <%- services.to_h.each do |name, spec| %>
+
+  <%= name %>:
+<%= OpenStruct.to_hash(spec).to_yaml.sub(/^.*?\n/, "").indent(4) %>
+  <%- end %>
   <%- upstreams.each do |upstream| %>
 
   <%= upstream.name %>:
@@ -46,11 +46,13 @@ services:
       - <%= upstream.port %>
     <%- end %>
     <%- if upstream[:compose] %>
-<%= to_yaml.(upstream[:compose]).sub(/^.*?\n/, "").indent(4) %>
+<%= OpenStruct.to_hash(upstream[:compose]).to_yaml.sub(/^.*?\n/, "").indent(4) %>
     <%- end %>
   <%- end %>
-  <%- services.each do |service, config| %>
+<%- unless volumes.nil? %>
 
-  <%= service %>:
-<%= to_yaml.(config).sub(/^.*?\n/, "").indent(4) %>
-  <%- end %>
+volumes:
+<%- volumes.each do |volume| %>
+  <%= volume %>:
+<%- end %>
+<%- end %>
