@@ -10,13 +10,13 @@ module VPS
 
         unless config[:upstreams].any?{|upstream| upstream[:name] == name}
           spec = derive_upstream(path)
+          spec[:nginx] ||= nil
           config[:upstreams].push(spec.merge({
             :name => name || File.basename(path),
             :path => path,
             :domains => [],
             :email => nil,
-            :compose => nil,
-            :nginx => nil
+            :compose => nil
           }))
           VPS.write_config(host, config)
         end
@@ -75,7 +75,15 @@ module VPS
             ruby_version: `$SHELL -l -c 'cd #{path} && ruby -e "puts RUBY_VERSION"'`.strip,
             bundler_version: `$SHELL -l -c 'cd #{path} && bundle -v'`.split.last,
             port: (type == "rails" ? 3000 : 9292) # :'(
-          }
+          }.tap do |spec|
+            if type == "rails"
+              spec[:nginx] = {
+                root: "/opt/app/public",
+                try_files: true,
+                proxy_redirect: "off"
+              }
+            end
+          end
         end
       end
 

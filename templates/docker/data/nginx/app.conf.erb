@@ -8,14 +8,17 @@ upstream <%= upstream[:name] %> {
   https = domains.first.include?("https://")
   domains = domains.collect{|domain| domain.gsub(/https?:\/\//, "")}.join(" ")
   domain = domains.split(" ")[0]
+  nginx = upstream[:nginx] || {}
   proxy_pass = "http://#{ upstream[:name] }"
 %>
 
 server {
+  <%- unless domains.empty? %>
   listen 80;
   server_name <%= domains %>;
   server_tokens off;
 
+  <%- end %>
   <%- if https %>
   location /.well-known/acme-challenge/ {
     root /var/www/certbot;
@@ -37,15 +40,25 @@ server {
   ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
   <%- end %>
-  <%- if upstream[:nginx] %>
-<%= upstream[:nginx].gsub("PROXY_PASS", proxy_pass).indent(2) %>
+  <%- if nginx[:root] %>
+  root <%= nginx[:root] %>;
+  <%- end %>
+  <%- if nginx[:try_files] %>
+  try_files $uri @app;
 
   <%- end %>
-  location / {
+  <%- if nginx[:config] %>
+<%= nginx[:config].gsub("PROXY_PASS", proxy_pass).indent(2) %>
+
+  <%- end %>
+  location <%= nginx[:try_files] ? "@app" : "/" %> {
     proxy_pass        <%= proxy_pass %>;
     proxy_set_header  Host $http_host;
     proxy_set_header  X-Real-IP $remote_addr;
     proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+    <%- if nginx[:proxy_redirect] %>
+    proxy_redirect    <%= nginx[:proxy_redirect] %>;
+    <%- end %>
   }
 }
 <%- end %>

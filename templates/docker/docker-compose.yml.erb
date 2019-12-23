@@ -23,7 +23,7 @@ services:
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
   certbot:
-    image: certbot/certbot
+    image: certbot/certbot:v0.27.1
     container_name: certbot
     restart: unless-stopped
     volumes:
@@ -49,7 +49,7 @@ services:
 <%= OpenStruct.to_hash(upstream[:compose]).to_yaml.sub(/^.*?\n/, "").indent(4) %>
     <%- end %>
   <%- end %>
-<%- unless volumes.nil? %>
+<%- unless (volumes || []).empty? %>
 
 volumes:
 <%- volumes.each do |volume| %>
