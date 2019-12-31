@@ -19,6 +19,10 @@ server {
   server_tokens off;
 
   <%- end %>
+  <%- if nginx[:http] %>
+<%= nginx[:http].gsub("PROXY_PASS", proxy_pass).indent(2) %>
+
+  <%- end %>
   <%- if https %>
   location /.well-known/acme-challenge/ {
     root /var/www/certbot;
@@ -47,8 +51,8 @@ server {
   try_files $uri @app;
 
   <%- end %>
-  <%- if nginx[:config] %>
-<%= nginx[:config].gsub("PROXY_PASS", proxy_pass).indent(2) %>
+  <%- if nginx[:https] %>
+<%= nginx[:https].gsub("PROXY_PASS", proxy_pass).indent(2) %>
 
   <%- end %>
   location <%= nginx[:try_files] ? "@app" : "/" %> {
