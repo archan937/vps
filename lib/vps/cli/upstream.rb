@@ -19,7 +19,9 @@ module VPS
             :path => path,
             :domains => [],
             :email => nil,
-            :compose => nil
+            :compose => {
+              :container_name => name || File.basename(path)
+            }
           }))
           VPS.write_config(host, config)
         end
