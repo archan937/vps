@@ -1,5 +1,10 @@
 ## VPS CHANGELOG
 
+### Version 0.2.2 (January 2, 2020)
+
+* Automatically add container names for upstreams and services
+* Add opportunity to add lines to the generated Dockerfile
+
 ### Version 0.2.1 (January 2, 2020)
 
 * Support NodeJS based applications
