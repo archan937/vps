@@ -83,6 +83,20 @@ module VPS
               }
             end
           end
+        elsif Dir["#{path}/package.json"].any?
+          tmpfile = "#{Dir.tmpdir}/vps-debug.log"
+          pid = spawn("cd #{path} && npm start", :out => tmpfile, :err => "/dev/null")
+          Process.detach(pid)
+          sleep 5
+          `ps aux | grep -e "no[d]e #{path}"`.strip.split("\n").collect do |line|
+            `kill -9 #{line.split(" ")[1]}`
+          end
+          port = File.read(tmpfile).match(/on port (\d+)/).captures.first.to_i
+          {
+            type: "node",
+            node_version: `$SHELL -l -c 'cd #{path} && node -v'`.match(/[\d\.?]+/).to_s,
+            port: port
+          }
         end
       end
 

@@ -1,3 +1,4 @@
+require "tmpdir"
 require "vps/version"
 
 module VPS

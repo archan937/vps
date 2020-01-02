@@ -1,0 +1,12 @@
+FROM node:<%= upstream.node_version %>-alpine
+
+RUN apk update \
+&& apk --no-cache --update add \
+  build-base nodejs tzdata
+
+WORKDIR /opt/app
+COPY . .
+
+ENV NODE_ENV=production
+RUN npm install
+CMD ["npm", "start"]
