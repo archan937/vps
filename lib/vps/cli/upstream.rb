@@ -12,10 +12,7 @@ module VPS
           spec = derive_upstream(path)
           config[:upstreams].push(spec.merge({
             :name => name || File.basename(path),
-            :path => path,
-            :compose => {
-              :container_name => name || File.basename(path)
-            }
+            :path => path
           }))
           VPS.write_config(host, config)
         end

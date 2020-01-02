@@ -34,12 +34,13 @@ services:
   <%- services.to_h.each do |name, spec| %>
 
   <%= name %>:
-<%= OpenStruct.to_hash(spec).to_yaml.sub(/^.*?\n/, "").indent(4) %>
+<%= OpenStruct.to_hash(spec).to_yaml.sub(/^.*?\n/, "").sub("\n", "\ncontainer_name: #{name}\n").indent(4) %>
   <%- end %>
   <%- upstreams.each do |upstream| %>
 
   <%= upstream.name %>:
     image: <%= upstream.name %>
+    container_name: <%= upstream.name %>
     restart: always
     <%- unless upstream[:compose].inspect.match(/\bports\b/) %>
     ports:
