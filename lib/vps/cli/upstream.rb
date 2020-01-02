@@ -10,15 +10,9 @@ module VPS
 
         unless config[:upstreams].any?{|upstream| upstream[:name] == name}
           spec = derive_upstream(path)
-          spec[:nginx] ||= {
-            :http => nil,
-            :https => nil
-          }
           config[:upstreams].push(spec.merge({
             :name => name || File.basename(path),
             :path => path,
-            :domains => [],
-            :email => nil,
             :compose => {
               :container_name => name || File.basename(path)
             }

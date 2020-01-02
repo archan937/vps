@@ -11,7 +11,7 @@ module VPS
 
         if (upstream = config[:upstreams].detect{|upstream| upstream[:name] == name})
           upstream[:email] = email if email
-          upstream[:domains].push(domain).uniq!
+          (upstream[:domains] ||= []).push(domain).uniq!
           VPS.write_config(host, config)
         end
       end
