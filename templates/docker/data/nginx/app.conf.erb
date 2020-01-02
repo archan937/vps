@@ -3,7 +3,7 @@
 upstream <%= upstream[:name] %> {
   server <%= upstream[:name] %>:<%= upstream[:port] %>;
 }
-<%- upstream[:domains].partition{|domain| domain.include?("http://")}.reject(&:empty?).each do |domains| %>
+<%- (upstream[:domains] || []).partition{|domain| domain.include?("http://")}.reject(&:empty?).each do |domains| %>
 <%-
   https = domains.first.include?("https://")
   domains = domains.collect{|domain| domain.gsub(/https?:\/\//, "")}.join(" ")

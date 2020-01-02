@@ -1,6 +1,6 @@
 #!/bin/bash
 
-<%- if (domains = upstream[:domains].collect{|domain| domain.dup.gsub!("https://", "")}.compact).any? %>
+<%- if (domains = (upstream[:domains] || []).collect{|domain| domain.dup.gsub!("https://", "")}.compact).any? %>
 domains=(<%= domains.join(" ") %>)
 email="<%= upstream[:email] || "noreply@#{domains.first}" %>" # Adding a valid address is strongly recommended
 data_path="./data/certbot"

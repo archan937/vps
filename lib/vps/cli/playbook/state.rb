@@ -57,7 +57,7 @@ module VPS
             (hash || {}).fetch(key)
           end.tap do |value|
             if to_domain && value
-              if (domain = value[:domains].first)
+              if (domain = (value[:domains] || ["-"]).first)
                 return domain.gsub(/https?:\/\//, "")
               end
             end
