@@ -9,5 +9,8 @@ WORKDIR /opt/app
 COPY . .
 
 ENV MIX_ENV=prod
+<%- if upstream.dockerfile %>
+<%= upstream.dockerfile.strip %>
+<%- end %>
 RUN mix do deps.get --only prod, deps.compile
 CMD ["sh", "-c", "mix run --no-halt"]

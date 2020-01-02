@@ -8,5 +8,8 @@ WORKDIR /opt/app
 COPY . .
 
 ENV NODE_ENV=production
+<%- if upstream.dockerfile %>
+<%= upstream.dockerfile.strip %>
+<%- end %>
 RUN npm install
 CMD ["npm", "start"]

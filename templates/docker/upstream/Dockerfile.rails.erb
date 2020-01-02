@@ -10,8 +10,12 @@ RUN apk update \
 WORKDIR /opt/app
 COPY . .
 
-ENV RAILS_ENV=production
 EXPOSE <%= upstream.port %>
+
+ENV RAILS_ENV=production
+<%- if upstream.dockerfile %>
+<%= upstream.dockerfile.strip %>
+<%- end %>
 RUN gem install bundler -v <%= upstream.bundler_version %>
 RUN bundle install --without development test
 CMD ["rm", "-f", "tmp/pids/server.pid"]
