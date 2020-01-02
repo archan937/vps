@@ -1,5 +1,9 @@
 ## VPS CHANGELOG
 
+### Version 0.2.3 (January 2, 2020)
+
+* Support upstreams without domains
+
 ### Version 0.2.2 (January 2, 2020)
 
 * Automatically add container names for upstreams and services
