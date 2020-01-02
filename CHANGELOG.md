@@ -1,5 +1,11 @@
 ## VPS CHANGELOG
 
+### Version 0.2.1 (January 2, 2020)
+
+* Support NodeJS based applications
+* Clean up default upstream specs
+* Set container name when adding upstream
+
 ### Version 0.2.0 (December 31, 2019)
 
 * Provide ability to add both custom HTTP and HTTPS Nginx configs
