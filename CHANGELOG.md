@@ -17,7 +17,7 @@
 
 ### Version 0.2.0 (December 31, 2019)
 
-* Provide ability to add both custom HTTP and HTTPS Nginx configs
+* Provide ability to add both custom HTTP and HTTPS Nginx configs [BREAKING]
 
 ### Version 0.1.2 (September 29, 2019)
 
