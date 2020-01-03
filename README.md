@@ -96,7 +96,7 @@ For support, remarks and requests, please mail me at [pm_engel@icloud.com](mailt
 
 ## License
 
-Copyright (c) 2019 Paul Engel, released under the MIT license
+Copyright (c) 2020 Paul Engel, released under the MIT license
 
 http://github.com/archan937 – http://twitter.com/archan937 – pm_engel@icloud.com
 
