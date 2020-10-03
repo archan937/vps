@@ -5,9 +5,6 @@ module VPS
 
         class AuthenticationFailedError < VPS::CLI::Error; end
         class SSHMock
-          def initialize
-            puts "🏄‍♀️ ~> ".gray + "Mocking SSH connection with Ubuntu 18.04.2 LTS server".cyan
-          end
           def exec!(command)
             case command
             when "cat /etc/lsb-release"
@@ -32,7 +29,11 @@ module VPS
         end
 
         def dry_run?
-          !!fetch(:d)
+          !!fetch(:d) || skip?
+        end
+
+        def skip?
+          !!fetch(:_skip_)
         end
 
         def scope(constants = {})
@@ -109,7 +110,9 @@ module VPS
             command = "sudo -u #{user} -H sh -c #{command.inspect}"
           end
           puts "🏄‍♀️ ~> ".gray + command.yellow
-          unless dry_run?
+          if dry_run?
+            puts "   skipped".gray if skip?
+          else
             start = Time.now
             result = []
 
@@ -132,18 +135,16 @@ module VPS
         end
 
         def home_directory
-          @home_directory ||= ssh.exec!("pwd").strip
+          ssh.exec!("pwd").strip
         end
 
         def server_version
-          @server_version ||= begin
-            release = ssh.exec!("cat /etc/lsb-release")
+          release = ssh.exec!("cat /etc/lsb-release")
 
-            distribution = release.match(/DISTRIB_ID=(.*)/)[1].underscore
-            release = release.match(/DISTRIB_RELEASE=(.*)/)[1]
+          distribution = release.match(/DISTRIB_ID=(.*)/)[1].underscore
+          release = release.match(/DISTRIB_RELEASE=(.*)/)[1]
 
-            [distribution, release].join("-")
-          end
+          [distribution, release].join("-")
         end
 
       private
@@ -153,12 +154,10 @@ module VPS
         end
 
         def ssh
-          @ssh ||= begin
-            if dry_run?
-              SSHMock.new
-            else
-              Net::SSH.start(fetch(:host), fetch(:user))
-            end
+          if dry_run?
+            SSHMock.new
+          else
+            Net::SSH.start(fetch(:host), fetch(:user))
           end
         rescue StandardError => e
           raise AuthenticationFailedError, e.message

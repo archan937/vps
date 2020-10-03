@@ -29,7 +29,9 @@ module VPS
 
     Playbook.all.each do |playbook|
       desc playbook.usage, playbook.description
-      method_options playbook.options if playbook.options
+      playbook.options.each do |(name, options)|
+        method_option name, options
+      end
       define_method playbook.command do |*args|
         start = Time.now
         playbook.run!(args, options)

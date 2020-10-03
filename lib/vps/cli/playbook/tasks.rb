@@ -86,7 +86,22 @@ module VPS
         end
 
         def when(state, options)
-          if state[options[:boolean]]
+          pass = false
+
+          if options.key?("boolean")
+            pass = !!state[options[:boolean]]
+          else
+            value = options.key?("value") ? state[options[:value]] : options[:string]
+            if options.key?("include")
+              pass = state[options[:include]].include?(value)
+            elsif options.key?("exclude")
+              pass = !state[options[:exclude]].include?(value)
+            end
+          end
+
+          scope = pass ? {} : {_skip_: true}
+
+          state.scope(scope) do
             puts_description(state, options)
             run_tasks(state, {:tasks => options[:run]})
           end
@@ -153,7 +168,9 @@ module VPS
           output = [options[:command]].flatten.inject(nil) do |_, command|
             command = state.resolve(command)
             puts "☕ ~> ".gray + command.yellow
-            unless state.dry_run?
+            if state.dry_run?
+              puts "   skipped".gray if state.skip?
+            else
               start = Time.now
               result = []
 

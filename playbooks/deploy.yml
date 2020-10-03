@@ -6,6 +6,11 @@ usage:
 arguments:
   - host
   - tool
+options:
+  s:
+    type: array
+    aliases: skip-build
+    default: []
 tasks:
   - task: ensure
     argument: user
