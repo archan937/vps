@@ -6,7 +6,8 @@ constants:
   docker_compose_file: "{{ config_path }}/docker-compose.yml"
   nginx_conf_file: "{{ config_path }}/data/nginx/app.conf"
 tasks:
-  - task: loop
+  - description: Building docker images
+    task: loop
     through: << upstreams >>
     as: upstream
     run:
