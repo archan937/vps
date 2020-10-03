@@ -13,23 +13,34 @@ tasks:
       - task: generate_file
         template: docker/upstream/Dockerfile.{{ upstream.type }}.erb
         target: "{{ config_path }}/{{ upstream.name }}/Dockerfile"
-      - description: Building '{{ upstream.name }}' image
-        task: execute
-        command: docker build --no-cache -f {{ config_path }}/{{ upstream.name }}/Dockerfile -t {{ upstream.name }} {{ upstream.path }}
+      - task: when
+        value: upstream.name
+        exclude: skip_build
+        run:
+          - task: execute
+            command: docker build --no-cache -f {{ config_path }}/{{ upstream.name }}/Dockerfile -t {{ upstream.name }} {{ upstream.path }}
   - description: Saving docker images as .gzip file
     task: loop
     through: << upstreams >>
     as: upstream
     run:
-      - task: execute
-        command: docker save {{ upstream.name }} | gzip > /tmp/{{ upstream.name }}.gzip
+      - task: when
+        value: upstream.name
+        exclude: skip_build
+        run:
+          - task: execute
+            command: docker save {{ upstream.name }} | gzip > /tmp/{{ upstream.name }}.gzip
   - description: Uploading images
     task: loop
     through: << upstreams >>
     as: upstream
     run:
-      - task: upload
-        file: /tmp/{{ upstream.name }}.gzip
+      - task: when
+        value: upstream.name
+        exclude: skip_build
+        run:
+          - task: upload
+            file: /tmp/{{ upstream.name }}.gzip
   - description: Stopping current containers
     task: remote_execute
     command: cd {{ release_path }} && docker-compose stop
@@ -38,15 +49,23 @@ tasks:
     through: << upstreams >>
     as: upstream
     run:
-      - task: remote_execute
-        command: docker container rm $(docker container ls -f ancestor={{ upstream.name }} -aq)
+      - task: when
+        value: upstream.name
+        exclude: skip_build
+        run:
+          - task: remote_execute
+            command: docker container rm $(docker container ls -f ancestor={{ upstream.name }} -aq)
   - description: Removing current images
     task: loop
     through: << upstreams >>
     as: upstream
     run:
-      - task: remote_execute
-        command: docker image rm {{ upstream.name }}
+      - task: when
+        value: upstream.name
+        exclude: skip_build
+        run:
+          - task: remote_execute
+            command: docker image rm {{ upstream.name }}
   - task: run_tasks
     tasks: << preload >>
   - description: Unzipping and loading docker images
@@ -54,8 +73,12 @@ tasks:
     through: << upstreams >>
     as: upstream
     run:
-      - task: remote_execute
-        command: gunzip < /tmp/{{ upstream.name }}.gzip | docker load
+      - task: when
+        value: upstream.name
+        exclude: skip_build
+        run:
+          - task: remote_execute
+            command: gunzip < /tmp/{{ upstream.name }}.gzip | docker load
   - task: generate_file
     template: docker/docker-compose.yml.erb
     target: "{{ docker_compose_file }}"
@@ -88,7 +111,7 @@ tasks:
           - cd {{ release_path }} && if [ ! -d "data/certbot/conf/live/{{ domain:upstream }}" ]; then yes Y | sudo ./init-letsencrypt/{{ upstream.name }}.sh; fi
   - description: Starting containers
     task: remote_execute
-    command: cd {{ release_path }} && docker-compose up {{ up }} -d
+    command: cd {{ release_path }} && docker-compose up -d
   - description: Checking running docker images
     task: remote_execute
     command: docker ps

@@ -61,8 +61,11 @@ module VPS
       end
 
       def options
-        options = playbook["options"] || {}
-        options[%w(-d --dry-run)] = :boolean
+        options = (playbook["options"] || {}).inject({}) do |hash, (key, value)|
+          hash[key.to_sym] = value.symbolize_keys
+          hash
+        end
+        options[:d] = {:type => :boolean, :aliases => "dry-run"}
         options
       end
 
@@ -86,6 +89,13 @@ module VPS
       def run!(args, options)
         hash = Hash[arguments.zip(args)]
         state = State.new(hash.merge(options))
+
+        self.options.each do |(name, opts)|
+          if opts[:aliases]
+            state[opts[:aliases].underscore] = state[name]
+          end
+        end
+
         run(state)
       end
 
