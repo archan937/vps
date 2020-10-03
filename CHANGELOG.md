@@ -1,5 +1,10 @@
 ## VPS CHANGELOG
 
+### Version 0.3.1 (October 3, 2020)
+
+* Support skipping certain image builds when deploying
+* Add more X-Forwarded headers to fix the origin error
+
 ### Version 0.2.3 (January 2, 2020)
 
 * Support upstreams without domains
