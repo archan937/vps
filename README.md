@@ -62,7 +62,7 @@ Et voilà. Your awesome website is online, powered by Docker and Nginx! :D
 
 ### Want to use a HTTPS domain?
 
-No problem, just specify so and make sure you also pass a valid email address (which is recommended). During deployment `certbot` will be added to the docker compose config and the SSL certificates will be created using [`init-letsencrypt.sh`](https://github.com/archan937/vps/blob/master/templates/docker/init-letsencrypt.sh.erb).
+No problem, just specify so and make sure you also pass a valid email address (which is recommended). During deployment `certbot` will be added to the docker compose config and the SSL certificates will be created using [`init-letsencrypt.sh`](https://github.com/archan937/vps/blob/master/templates/docker/upstream/init-letsencrypt.sh.erb).
 
     $ vps init silver_surfer
     $ vps install silver_surfer docker
